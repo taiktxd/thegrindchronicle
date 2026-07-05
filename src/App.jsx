@@ -8,7 +8,7 @@ import PostDetail from "./pages/PostDetail";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/thegrindchronicle">
       <Header />
 
       <main>
