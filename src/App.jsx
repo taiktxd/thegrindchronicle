@@ -1,26 +1,16 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-
-import Home from "./pages/Home";
-import PostDetail from "./pages/PostDetail";
+import { HashRouter, Routes, Route } from "react-router-dom"; // Đổi ở đây
 
 function App() {
   return (
-    <BrowserRouter basename="/thegrindchronicle">
+    <HashRouter> {/* Đổi ở đây */}
       <Header />
-
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/post/:slug" element={<PostDetail />} />
         </Routes>
       </main>
-
       <Footer />
-    </BrowserRouter>
+    </HashRouter> {/* Đổi ở đây */}
   );
 }
-
-export default App;
