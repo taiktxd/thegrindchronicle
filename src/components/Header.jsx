@@ -24,7 +24,7 @@ function Header() {
         fontSize: '13px',
         letterSpacing: '1px'
       }}>
-        <a href="/" style={{ color: '#222222', textDecoration: 'none' }}>HOME</a>
+        <a href="#" style={{ color: '#222222', textDecoration: 'none' }}>HOME</a>
         <a href="#" style={{ color: '#ff4d4d', textDecoration: 'none' }}>NBA</a>
         <a href="#" style={{ color: '#333333', textDecoration: 'none' }}>STORIES</a>
         <a href="#" style={{ color: '#333333', textDecoration: 'none' }}>ATHLETES</a>
