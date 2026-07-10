@@ -1,0 +1,116 @@
+/* ===========================
+   HEADER
+=========================== */
+
+.header-area {
+  background: #ffffff;
+  border-bottom: 1px solid #ececec;
+  margin-bottom: 40px;
+  border-bottom: 3px solid rgb(238, 103, 48);
+}
+
+/* Khung giới hạn chiều rộng */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px 20px;
+  text-align: center;
+}
+
+/* Logo */
+.site-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #111111;
+}
+
+/* Slogan */
+.site-description {
+  margin-top: 8px;
+  color: #666666;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* ===========================
+   NAVIGATION
+=========================== */
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 35px;
+
+  padding: 16px 20px;
+
+  border-top: 1px solid #f3f3f3;
+}
+
+.navbar a {
+  color: #333333;
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  transition: 0.25s ease;
+}
+
+.navbar a:hover {
+  color: #d62828;
+}
+
+/* Menu đang được chọn */
+
+.navbar a.active {
+  color: #d62828;
+}
+
+/* ===========================
+   TABLET
+=========================== */
+
+@media (max-width: 768px) {
+
+  .container {
+    padding: 25px 15px 18px;
+  }
+
+  .navbar {
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .navbar a {
+    font-size: 12px;
+  }
+
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width: 480px) {
+
+  .site-title {
+    letter-spacing: 1px;
+  }
+
+  .site-description {
+    font-size: 13px;
+  }
+
+  .navbar {
+    gap: 12px;
+    padding: 14px;
+  }
+
+}

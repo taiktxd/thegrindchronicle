@@ -1,0 +1,103 @@
+/* ===========================
+   FOOTER
+=========================== */
+
+.footer {
+  margin-top: 70px;
+  background: #111111;
+  color: #ffffff;
+
+  border-top: 3px solid rgb(238, 103, 48);
+
+  padding: 50px 20px;
+}
+
+.footer-container {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Logo */
+
+.footer-title {
+  margin: 0;
+
+  font-size: clamp(1.5rem, 3vw, 2rem);
+
+  font-weight: 800;
+
+  text-transform: uppercase;
+
+  letter-spacing: 2px;
+}
+
+/* Slogan */
+
+.footer-tagline {
+  margin: 10px 0 28px;
+
+  color: #9b9b9b;
+
+  font-style: italic;
+
+  font-size: 14px;
+}
+
+/* ===========================
+   LINKS
+=========================== */
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 30px;
+}
+
+.footer-links a {
+  color: #b5b5b5;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  transition: .25s;
+}
+
+.footer-links a:hover {
+  color: white;
+}
+
+/* ===========================
+   COPYRIGHT
+=========================== */
+
+.footer-copy {
+  color: #777777;
+
+  font-size: 12px;
+
+  margin: 0;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width:768px){
+
+  .footer{
+
+    padding:40px 20px;
+  }
+
+  .footer-links{
+
+    gap:15px;
+  }
+
+}
