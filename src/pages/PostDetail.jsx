@@ -73,7 +73,7 @@ function PostDetail() {
 
                     <p>The article you're looking for doesn't exist.</p>
 
-                    <Link to="/" className="back-link">
+                    <Link to="" className="back-link">
 
                         ← Back to Home
 
