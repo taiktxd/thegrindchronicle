@@ -6,6 +6,9 @@ function Home() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const postsPerPage = 6;
+
     useEffect(() => {
         const baseUrl = import.meta.env.BASE_URL;
         const jsonPath = `${baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"}data.json`;
@@ -36,15 +39,19 @@ function Home() {
             </main>
         );
     }
+
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+    const totalPages = Math.ceil(posts.length / postsPerPage);
      
-    console.log(posts.length);
-    console.log(posts);
+
     return (
         <main className="home">
+            <div className="content">
+                <div className="posts-grid">
 
-            <div className="posts-grid">
-
-                {posts.map((post) => (
+                {currentPosts.map((post) => (
 
                     <Link
                         key={post.slug}
@@ -88,8 +95,39 @@ function Home() {
                     </Link>
 
                 ))}
+                </div>
+
+                <div className="pagination">
+
+                    <button
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            onClick={() => setCurrentPage(index + 1)}
+                            className={currentPage === index + 1 ? "active" : ""}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+
+                    <button
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </button>
+
+                </div>
 
             </div>
+
+            
 
         </main>
     );

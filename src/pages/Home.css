@@ -8,6 +8,11 @@
     padding: 20px;
 }
 
+.content{
+    max-width:1200px;
+    margin:0 auto;
+}
+
 /* ===========================
    LOADING
 =========================== */
@@ -25,10 +30,9 @@
 
 .posts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 35px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
 }
-
 /* ===========================
    LINK
 =========================== */
@@ -215,4 +219,39 @@
 
     }
 
+}
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 50px 0;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: #111;
+    color: white;
+}
+
+.pagination button.active {
+    background: #111;
+    color: white;
+    font-weight: bold;
+}
+
+.pagination button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
 }
