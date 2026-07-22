@@ -8,7 +8,7 @@ import PostDetail from "./pages/PostDetail";
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Header />
 
       <main>
@@ -19,7 +19,7 @@ function App() {
       </main>
 
       <Footer />
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
