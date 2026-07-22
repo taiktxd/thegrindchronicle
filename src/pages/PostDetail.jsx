@@ -123,43 +123,65 @@ function PostDetail() {
                     className="article-cover"
                 />
 
-                <p className="article-intro">
+                {post.sections?.map((section, index) => {
 
-                    {post.intro}
+                    if (section.type === "text") {
 
-                </p>
+                        return (
+                            <div
+                                key={index}
+                                className="article-text"
+                            >
 
-                {post.bodyImage && (
+                                {section.content
+                                    .split("\n\n")
+                                    .map((paragraph, pIndex) => (
 
-                    <img
-                        src={post.bodyImage}
-                        alt={post.title}
-                        className="article-image"
-                    />
+                                        <p key={pIndex}>
 
-                )}
+                                            {paragraph}
 
-                <p className="article-body">
+                                        </p>
 
-                    {post.body}
+                                    ))}
 
-                </p>
+                            </div>
+                        );
 
-                {post.endingImage && (
+                    }
 
-                    <img
-                        src={post.endingImage}
-                        alt={post.title}
-                        className="article-image"
-                    />
+                    if (section.type === "image") {
 
-                )}
+                        return (
+                            <figure
+                                key={index}
+                                className="article-figure"
+                            >
 
-                <blockquote className="article-conclusion">
+                                <img
+                                    src={section.src}
+                                    alt={section.caption || post.title}
+                                    className="article-image"
+                                />
 
-                    {post.conclusion}
+                                {section.caption && (
 
-                </blockquote>
+                                    <figcaption className="article-caption">
+
+                                        {section.caption}
+
+                                    </figcaption>
+
+                                )}
+
+                            </figure>
+                        );
+
+                    }
+
+                    return null;
+
+                })}
 
                 <Link
                     to="/"
