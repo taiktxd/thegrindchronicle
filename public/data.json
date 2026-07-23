@@ -54,7 +54,7 @@
   "slug": "the-world-saw-doubt-stephen-curry-saw-his-teammate",
   "title": "The World Saw Doubt. Stephen Curry Saw His Teammate.",
   "summary": "When Kevin Durant became one of the most debated players in basketball, many people saw headlines, criticism, and controversy. Stephen Curry kept seeing the same teammate he had always known. Sometimes trust is not built by defending someone loudly. It is built by refusing to see them differently when everyone else does.",
-  "coverImage": "./images/legends/curry-durant-trust.jpg",
+  "coverImage": "/images/legends/curry-durant-trust.jpg",
   "sections": [
     {
       "type": "text",
@@ -62,7 +62,7 @@
     },
     {
       "type": "image",
-      "src": "./images/legends/curry-durant-hug.jpg",
+      "src": "/images/legends/curry-durant-hug.jpg",
       "caption": "Long before opinions became louder than reality, they had already shared victories, setbacks, and countless days inside the same locker room."
     },
     {
@@ -71,7 +71,7 @@
     },
     {
       "type": "image",
-      "src": "./images/legends/curry-durant-conversation.jpg",
+      "src": "/images/legends/curry-durant-conversation.jpg",
       "caption": "Real trust is often built far away from cameras."
     },
     {
@@ -80,7 +80,7 @@
     },
     {
       "type": "image",
-      "src": "./images/legends/curry-durant-support.jpg",
+      "src": "/images/legends/curry-durant-support.jpg",
       "caption": "Sometimes the strongest support is simply refusing to see someone differently."
     },
     {
@@ -105,7 +105,7 @@
   "slug": "nobody-called-him-king-that-afternoon",
   "title": "Nobody Called Him King That Afternoon.",
   "summary": "For one afternoon, LeBron James was not the face of the NBA, a four-time champion, or the player millions call the King. Sitting a few rows up in the stands, he had only one role that mattered: being Zhuri's biggest fan.",
-  "coverImage": "./images/family/lebron-zhuri-volleyball.jpg",
+  "coverImage": "/images/family/lebron-zhuri-volleyball.jpg",
   "sections": [
     {
       "type": "text",
@@ -113,7 +113,7 @@
     },
     {
       "type": "image",
-      "src": "./images/family/lebron-zhuri-cheering.jpg",
+      "src": "/images/family/lebron-zhuri-cheering.jpg",
       "caption": "For one afternoon, the only player he was watching was his daughter."
     },
     {
@@ -122,7 +122,7 @@
     },
     {
       "type": "image",
-      "src": "./images/family/lebron-zhuri-munchkin.jpg",
+      "src": "/images/family/lebron-zhuri-munchkin.jpg",
       "caption": "\"Let's go, Munchkin!\" sounded a lot more like a father than a legend."
     },
     {
@@ -131,7 +131,7 @@
     },
     {
       "type": "image",
-      "src": "./images/family/lebron-zhuri-smile.jpg",
+      "src": "/images/family/lebron-zhuri-smile.jpg",
       "caption": "There are places where greatness is measured in trophies. This wasn't one of them."
     },
     {
@@ -140,7 +140,7 @@
     },
     {
       "type": "image",
-      "src": "./images/family/lebron-all-family.jpg",
+      "src": "/images/family/lebron-all-family.jpg",
       "caption": "Some of life's most meaningful seats are nowhere near center court."
     },
     {
@@ -165,7 +165,7 @@
   "slug": "some-smiles-only-appear-when-people-finally-stop-asking-you-to-be-extraordinary",
   "title": "Some Smiles Only Appear When People Finally Stop Asking You to Be Extraordinary.",
   "summary": "For weeks, Nikola Jokić carried the weight of expectations that only a few people on Earth will ever understand. Then he returned to Serbia. Among familiar faces, old streets, and people who had known him long before the world did, he smiled in a way that had nothing to do with basketball. Sometimes the greatest gift success can offer is the chance to stop being extraordinary, if only for a little while.",
-  "coverImage": "./images/legends/jokic-serbia-homecoming.jpg",
+  "coverImage": "/images/legends/jokic-serbia-homecoming.jpg",
   "sections": [
     {
       "type": "text",
@@ -173,7 +173,7 @@
     },
     {
       "type": "image",
-      "src": "./images/legends/jokic-homecoming-crowd.jpg",
+      "src": "/images/legends/jokic-homecoming-crowd.jpg",
       "caption": "Some welcomes celebrate what you've achieved. Others simply celebrate that you've come back."
     },
     {
@@ -182,7 +182,7 @@
     },
     {
       "type": "image",
-      "src": "./images/legends/jokic-smiling.jpg",
+      "src": "/images/legends/jokic-smiling.jpg",
       "caption": "Sometimes the most peaceful smiles appear where no one expects you to prove anything."
     },
     {
@@ -191,7 +191,7 @@
     },
     {
       "type": "image",
-      "src": "./images/legends/jokic-serbia-fans.jpg",
+      "src": "/images/legends/jokic-serbia-fans.jpg",
       "caption": "Belonging is one of the few things success can never replace."
     },
     {
@@ -200,7 +200,7 @@
     },
     {
       "type": "image",
-      "src": "./images/legends/jokic-walking-home.jpg",
+      "src": "/images/legends/jokic-walking-home.jpg",
       "caption": "Some journeys end with applause. The most meaningful ones end with peace."
     },
     {
@@ -225,7 +225,7 @@
     "slug": "sometimes-lebron-james-lets-zhuri-take-the-lead",
     "title": "Sometimes, LeBron James Lets Zhuri Take the Lead.",
     "summary": "For most of his life, LeBron James has carried the weight of impossible decisions. Yet one of the easiest choices he makes is letting his youngest daughter, Zhuri, decide something as simple as what he wears. It's a small family moment that quietly says everything about trust, fatherhood, and the man behind the legend.",
-    "coverImage": "./images/legends/lebron-zhuri-cover.jpg",
+    "coverImage": "/images/legends/lebron-zhuri-cover.jpg",
     "sections": [
       {
         "type": "text",
@@ -233,7 +233,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-zhuri-outfit.jpg",
+        "src": "/images/legends/lebron-zhuri-outfit.jpg",
         "caption": "She looks through different combinations. Her father smiles, trusting her instincts."
       },
       {
@@ -242,7 +242,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-zhuri-family.jpg",
+        "src": "/images/legends/lebron-zhuri-family.jpg",
         "caption": "Sometimes, being a father means allowing your child to lead."
       },
       {
@@ -267,7 +267,7 @@
     "slug": "greatness-doesnt-mean-giving-up-every-pleasure",
     "title": "LeBron James Doesn't Believe Greatness Means Giving Up Every Pleasure.",
     "summary": "LeBron James has spent decades building one of the greatest careers in basketball through relentless discipline. Yet he has never believed greatness requires giving up every simple joy. His story reminds us that balance, not perfection, is what makes excellence sustainable.",
-    "coverImage": "./images/legends/lebron-balance.jpg",
+    "coverImage": "/images/legends/lebron-balance.jpg",
     "sections": [
       {
         "type": "text",
@@ -275,7 +275,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-wine.jpg",
+        "src": "/images/legends/lebron-wine.jpg",
         "caption": "A glass of wine shared with friends does not erase years of commitment."
       },
       {
@@ -284,7 +284,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-training.jpg",
+        "src": "/images/legends/lebron-training.jpg",
         "caption": "Perfection is difficult to maintain. Balance can last a lifetime."
       },
       {
@@ -309,7 +309,7 @@
     "slug": "shaq-didnt-walk-into-that-store-looking-for-attention",
     "title": "Shaq Didn't Walk Into That Store Looking for Attention. He Walked Out After Changing Someone's Day.",
     "summary": "Some of the most memorable moments in Shaquille O'Neal's life never happened on a basketball court. They happened quietly inside ordinary stores, where no cameras were rolling and no headlines were expected. Just a simple act of kindness from a man who never seemed to need an audience.",
-    "coverImage": "./images/legends/shaq-store-kindness.jpg",
+    "coverImage": "/images/legends/shaq-store-kindness.jpg",
     "sections": [
       {
         "type": "text",
@@ -317,7 +317,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/shaq-paying-laptop.jpg",
+        "src": "/images/legends/shaq-paying-laptop.jpg",
         "caption": "Shaq quietly reaches for his wallet, no cameras rolling."
       },
       {
@@ -326,7 +326,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/shaq-smiling-fans.jpg",
+        "src": "/images/legends/shaq-smiling-fans.jpg",
         "caption": "Kindness is often loud when it's trying to be seen. Shaq's kindness usually seems quiet."
       },
       {
@@ -351,7 +351,7 @@
     "slug": "every-child-deserves-the-same-chance",
     "title": "The Boy Basketball Once Saved Grew Up Believing Every Child Deserves the Same Chance.",
     "summary": "LeBron James has often been celebrated for championships, records, and longevity. But the mission that may define his life has little to do with basketball. It began with a child who knew what it felt like to grow up without certainty, and who never forgot what a single opportunity can mean.",
-    "coverImage": "./images/legends/lebron-every-child-deserves-a-chance.jpg",
+    "coverImage": "/images/legends/lebron-every-child-deserves-a-chance.jpg",
     "sections": [
       {
         "type": "text",
@@ -359,7 +359,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/young-lebron-akron.jpg",
+        "src": "/images/legends/young-lebron-akron.jpg",
         "caption": "A place to belong. A routine. A team. Adults who believed in him."
       },
       {
@@ -368,7 +368,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-ipromise-school-drame.jpg",
+        "src": "/images/legends/lebron-ipromise-school-drame.jpg",
         "caption": "Not a guarantee. Just the opportunity to discover who they might become."
       },
       {
@@ -394,7 +394,7 @@
     "slug": "before-stephen-curry-changed-basketball",
     "title": "Before Stephen Curry Changed Basketball, He Was Just Trying to Beat His Brother.",
     "summary": "Long before the records, the championships, and the impossible three pointers, Stephen Curry was simply a little brother who never wanted to lose. Every shot in the driveway was another chance to beat Seth. Looking back, those childhood competitions may have shaped basketball forever.",
-    "coverImage": "./images/legends/stephen-seth-curry-childhood.jpg",
+    "coverImage": "/images/legends/stephen-seth-curry-childhood.jpg",
     "sections": [
       {
         "type": "text",
@@ -402,7 +402,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/young-stephen-seth.jpg",
+        "src": "/images/legends/young-stephen-seth.jpg",
         "caption": "Every made shot challenged the next one. Every miss became motivation."
       },
       {
@@ -411,7 +411,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/stephen-seth-nba.jpg",
+        "src": "/images/legends/stephen-seth-nba.jpg",
         "caption": "Two brothers back in the driveway, trying to settle one more shooting contest."
       },
       {
@@ -437,7 +437,7 @@
     "slug": "jimmy-butler-backpack-story",
     "title": "At 13, Jimmy Butler Had Nowhere to Call Home. All He Had Was a Backpack and the Will to Keep Going.",
     "summary": "At thirteen, Jimmy Butler had nowhere to call home. Everything he owned fit inside a single backpack, yet the most remarkable thing he carried was the quiet determination to keep moving forward, even when he had no idea where the road would lead.",
-    "coverImage": "./images/legends/jimmy-butler-backpack.jpg",
+    "coverImage": "/images/legends/jimmy-butler-backpack.jpg",
     "sections": [
       {
         "type": "text",
@@ -445,7 +445,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/jimmy-butler-young.jpg",
+        "src": "/images/legends/jimmy-butler-young.jpg",
         "caption": "Everything he owned fit inside a single backpack."
       },
       {
@@ -454,7 +454,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/jimmy-butler-draft.jpg",
+        "src": "/images/legends/jimmy-butler-draft.jpg",
         "caption": "'If you're going to leave, you have to leave because you want to.'"
       },
       {
@@ -482,7 +482,7 @@
     "slug": "maybe-lebron-james-isnt-trying-to-rewrite-his-childhood",
     "title": "Maybe LeBron James Isn't Trying to Rewrite His Childhood. He's Making Sure No Child Has to Relive It.",
     "summary": "LeBron James once grew up moving from home to home with his mother, never knowing how long they would stay. Today, the child who searched for stability is helping thousands of children find the one thing he never had enough of growing up: a place to belong.",
-    "coverImage": "./images/legends/lebron-childhood-healing.jpg",
+    "coverImage": "/images/legends/lebron-childhood-healing.jpg",
     "sections": [
       {
         "type": "text",
@@ -490,7 +490,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-ipromise-school.jpg",
+        "src": "/images/legends/lebron-ipromise-school.jpg",
         "caption": "It was never simply about education. It was about creating stability."
       },
       {
@@ -499,7 +499,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-akron-children.jpg",
+        "src": "/images/legends/lebron-akron-children.jpg",
         "caption": "Every child deserves something he once searched for. A safe place."
       },
       {
@@ -525,7 +525,7 @@
     "slug": "the-hand-stephen-curry-keeps-reaching-for",
     "title": "There Was One Thing Stephen Curry Always Seemed to Reach for.",
     "summary": "Stephen Curry has held championship trophies, MVP awards, and Olympic gold. Yet the quiet moments away from basketball often reveal something far more meaningful. Sometimes, the most beautiful thing an athlete holds is the hand that has walked beside them through every chapter.",
-    "coverImage": "./images/legends/stephen-curry-ayesha-hand.jpg",
+    "coverImage": "/images/legends/stephen-curry-ayesha-hand.jpg",
     "sections": [
       {
         "type": "text",
@@ -533,7 +533,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/stephen-curry-ayesha-espys.jpg",
+        "src": "/images/legends/stephen-curry-ayesha-espys.jpg",
         "caption": "They still seem to find each other's hand as naturally as ever."
       },
       {
@@ -542,7 +542,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/stephen-curry-ayesha-smile.jpg",
+        "src": "/images/legends/stephen-curry-ayesha-smile.jpg",
         "caption": "A familiar hand. A familiar presence. A quiet sense of home."
       },
       {
@@ -568,7 +568,7 @@
     "slug": "before-he-became-the-face-of-the-knicks",
     "title": "Before He Became the Face of the Knicks, There Was One Place Jalen Brunson Never Wanted to Leave.",
     "summary": "Some children discover their passion on a playground. Jalen Brunson discovered his inside NBA locker rooms, where every conversation, every practice, and every quiet moment fueled a lifelong love for basketball.",
-    "coverImage": "./images/legends/jalen-brunson-locker-room.jpg",
+    "coverImage": "/images/legends/jalen-brunson-locker-room.jpg",
     "sections": [
       {
         "type": "text",
@@ -576,7 +576,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/jalen-brunson-young.jpg",
+        "src": "/images/legends/jalen-brunson-young.jpg",
         "caption": "He watched routines. He listened to conversations. He noticed the focus before tipoff."
       },
       {
@@ -585,7 +585,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/jalen-brunson-knicks.jpg",
+        "src": "/images/legends/jalen-brunson-knicks.jpg",
         "caption": "Sometimes passion doesn't begin with a basketball in your hands."
       },
       {
@@ -610,7 +610,7 @@
     "slug": "stephen-curry-brought-hope-africa",
     "title": "Stephen Curry Didn't Bring Basketball. He Brought Hope.",
     "summary": "Long before receiving the Muhammad Ali Humanitarian Award, Stephen Curry quietly traveled to Africa with a simple mission. He wasn't there to teach basketball or celebrate championships. He came to help protect children from one of the world's deadliest diseases and remind families that hope can arrive in the simplest forms.",
-    "coverImage": "./images/legends/stephen-curry-humanitarian-africa.jpg",
+    "coverImage": "/images/legends/stephen-curry-humanitarian-africa.jpg",
     "sections": [
       {
         "type": "text",
@@ -618,7 +618,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/stephen-curry-africa-children.jpg",
+        "src": "/images/legends/stephen-curry-africa-children.jpg",
         "caption": "No trophy in his hands. Just quiet conversations and genuine human connection."
       },
       {
@@ -627,7 +627,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/stephen-curry-muhammad-ali-award.jpg",
+        "src": "/images/legends/stephen-curry-muhammad-ali-award.jpg",
         "caption": "Sometimes the greatest legacy begins with a single act of humanity."
       },
       {
@@ -652,7 +652,7 @@
     "slug": "from-rivals-to-respect-lebron-curry-story",
     "title": "From Rivals to Respect: The Best Part of Their Story Might Still Be Ahead",
     "summary": "For nearly a decade, LeBron James and Stephen Curry defined one of the greatest rivalries in NBA history. What began as fierce competition slowly became something even more meaningful. A friendship built on respect that only true legends can understand.",
-    "coverImage": "./images/legends/lebron-curry-rivals.jpg",
+    "coverImage": "/images/legends/lebron-curry-rivals.jpg",
     "sections": [
       {
         "type": "text",
@@ -660,7 +660,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-curry-finals.jpg",
+        "src": "/images/legends/lebron-curry-finals.jpg",
         "caption": "The rivalry was never built on hatred. It was built on excellence."
       },
       {
@@ -669,7 +669,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-curry-respect.jpg",
+        "src": "/images/legends/lebron-curry-respect.jpg",
         "caption": "From rivals to respect, their story still feels unfinished."
       },
       {
@@ -695,7 +695,7 @@
     "slug": "before-the-king-jay-z-believed",
     "title": "Before the King: Why Jay-Z Believed in LeBron James Before the World Did",
     "summary": "Long before LeBron James became the face of basketball, Jay-Z saw something special in a teenager from Akron. Sometimes greatness is recognized long before history confirms it.",
-    "coverImage": "./images/legends/lebron-jayz-young.jpg",
+    "coverImage": "/images/legends/lebron-jayz-young.jpg",
     "sections": [
       {
         "type": "text",
@@ -703,7 +703,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-jayz-concert.jpg",
+        "src": "/images/legends/lebron-jayz-concert.jpg",
         "caption": "Attention follows hype. Belief requires vision."
       },
       {
@@ -712,7 +712,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-jayz-legacy.jpg",
+        "src": "/images/legends/lebron-jayz-legacy.jpg",
         "caption": "Great people often remember those who believed in them before the world did."
       },
       {
@@ -735,7 +735,7 @@
     "slug": "stephen-curry-from-doubt-to-changing-the-game",
     "title": "From Painful Words to Changing the Game: Stephen Curry's Mother Reveals the Heartbreaking Struggles Behind His Rise",
     "summary": "Before Stephen Curry became the greatest shooter basketball has ever seen, he was a teenager constantly told he was too small to succeed. His journey proves that belief and relentless work can change not only a life, but an entire sport.",
-    "coverImage": "./images/legends/stephen-curry-young.jpg",
+    "coverImage": "/images/legends/stephen-curry-young.jpg",
     "sections": [
       {
         "type": "text",
@@ -743,7 +743,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/stephen-curry-shooting.jpg",
+        "src": "/images/legends/stephen-curry-shooting.jpg",
         "caption": "One shot became ten. Ten became one hundred. Hundreds became thousands."
       },
       {
@@ -752,7 +752,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/stephen-curry-champion.jpg",
+        "src": "/images/legends/stephen-curry-champion.jpg",
         "caption": "Greatness is built through persistence, sacrifice, and the courage to keep moving forward."
       },
       {
@@ -775,7 +775,7 @@
     "slug": "from-king-to-dad",
     "title": "From King to Dad: The Warm Heart Behind LeBron James' Greatest Role",
     "summary": "To millions of basketball fans, LeBron James is the King. But inside his own home, he happily leaves the crown at the door and embraces the role that matters most: being a father.",
-    "coverImage": "./images/family/lebron-daughter-nba-cover.jpg",
+    "coverImage": "/images/family/lebron-daughter-nba-cover.jpg",
     "sections": [
       {
         "type": "text",
@@ -783,7 +783,7 @@
       },
       {
         "type": "image",
-        "src": "./images/family/lebron-daughter-cooking.jpg",
+        "src": "/images/family/lebron-daughter-cooking.jpg",
         "caption": "For a few minutes, basketball disappeared completely."
       },
       {
@@ -792,7 +792,7 @@
       },
       {
         "type": "image",
-        "src": "./images/family/lebron-family.jpg",
+        "src": "/images/family/lebron-family.jpg",
         "caption": "Long after the final buzzer sounds, those quiet moments may become the greatest legacy."
       },
       {
@@ -815,7 +815,7 @@
     "slug": "the-pain-behind-the-king",
     "title": "The Pain Behind the King: How LeBron James Destroyed His Feet to Become the NBA's All Time Leading Scorer",
     "summary": "Fans remember the records and the championships. Few realize the silent pain LeBron James has carried for more than three decades just to remain on the court.",
-    "coverImage": "./images/legends/lebron-james-feet.jpg",
+    "coverImage": "/images/legends/lebron-james-feet.jpg",
     "sections": [
       {
         "type": "text",
@@ -823,7 +823,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-james-feet.jpg",
+        "src": "/images/legends/lebron-james-feet.jpg",
         "caption": "Every swollen joint represents another game played."
       },
       {
@@ -832,7 +832,7 @@
       },
       {
         "type": "image",
-        "src": "./images/legends/lebron-james-laker.jpg",
+        "src": "/images/legends/lebron-james-laker.jpg",
         "caption": "The strongest people are not those who never feel pain. They are the ones who keep moving forward."
       },
       {
@@ -855,7 +855,7 @@
     "slug": "kevin-durant-mother-giving-back",
     "title": "Long Before Kevin Durant Became an MVP, His Mother Was Fighting a Different Battle",
     "summary": "Every Thanksgiving, Wanda Durant gives away free turkeys to families in Maryland. Behind that simple act of generosity is a story of sacrifice, resilience, and a promise never to forget where they came from.",
-    "coverImage": "./images/family/kevin-durant-mother-charity.jpg",
+    "coverImage": "/images/family/kevin-durant-mother-charity.jpg",
     "sections": [
       {
         "type": "text",
@@ -863,22 +863,22 @@
       },
       {
         "type": "image",
-        "src": "./images/family/kevin-durant-young.jpg",
+        "src": "/images/family/kevin-durant-young.jpg",
         "caption": "A mother making sure he had somewhere safe to practice, believing in him before the world noticed."
       },
       {
         "type": "text",
-        "src": "./images/family/kevin-durant-not-an-nba-arena.jpg",
+        "src": "/images/family/kevin-durant-not-an-nba-arena.jpg",
         "content": "Kevin Durant's story did not begin inside an NBA arena. It began in Prince George's County, Maryland, where life was often shaped by financial uncertainty rather than comfort. After Kevin's father left the family during his childhood, Wanda Durant suddenly found herself raising two sons largely on her own. She worked long hours, balanced multiple responsibilities, and carried the weight of providing both emotionally and financially.\n\nThere were no guarantees that basketball would change their lives. There were only early mornings, exhausting workdays, and a mother who refused to allow difficult circumstances to define her children. Wanda often reminded Kevin that character mattered more than talent and that discipline would always outlast natural ability.\n\nKevin quickly discovered that talent alone was never enough. Every opportunity demanded another sacrifice. While other children enjoyed carefree afternoons, Kevin spent countless hours developing his game. Behind every workout stood a mother making sure he had somewhere safe to practice, encouraging him when confidence faded, and believing in him before the rest of the basketball world noticed his potential.\n\nYears later, Kevin would become one of the most unstoppable scorers in NBA history. His combination of size, skill, and shooting transformed him into one of basketball's most unique players. MVP awards, Olympic gold medals, championships, and scoring titles followed. To the outside world, success appeared complete.\n\nThen another challenge arrived. In 2019, Durant suffered one of the most devastating injuries an athlete can face when he ruptured his Achilles tendon during the NBA Finals. Many questioned whether he would ever return to the same level. History is filled with great players whose careers changed forever after similar injuries.\n\nOnce again, the Durant family leaned on the same values that had carried them through childhood. Patience replaced frustration. Daily rehabilitation replaced game nights. Every small improvement became another step toward returning to the court. Kevin did not rush the process. He trusted the work, just as he had trusted countless hours in empty gyms years earlier.\n\nHis return reminded fans why resilience often matters more than talent. Kevin was no longer simply proving that he could score against the world's best defenders. He was proving that setbacks do not have to define a person's future. The same determination that helped a young boy overcome difficult circumstances now helped a veteran overcome one of basketball's most feared injuries.\n\nDespite everything he achieved, one thing never changed. Kevin and his mother never forgot where their journey began. Success brought wealth, recognition, and opportunities, but it never erased the memories of uncertainty. They understood what it felt like to worry about providing for a family during the holidays. That understanding explains why their charitable work feels so personal.\n\nEvery Thanksgiving turkey handed to a family represents much more than a meal. It represents empathy born from experience. Wanda Durant knows that kindness has the greatest impact when it reaches people who are quietly carrying burdens others cannot see. Kevin understands that giving back is not about publicity. It is about honoring the sacrifices that allowed him to chase his own dream.\n\nFans often describe Kevin Durant through statistics, championships, or unforgettable scoring performances. Those achievements deserve recognition, but they tell only part of his story. Behind every point he scored stood a mother who sacrificed comfort so her sons could build a better future. Behind every award stood years of invisible work that never appeared in highlight reels.\n\nPerhaps that is why their annual tradition continues to resonate with so many people. It is not simply an act of generosity. It is a reminder that success means very little if it causes someone to forget the people and places that shaped them. Kevin Durant may have become one of basketball's greatest players, but Wanda Durant's greatest lesson had nothing to do with basketball. It was about remembering where you came from and making sure someone else has a reason to believe tomorrow can be better than today."
       },
       {
         "type": "image",
-        "src": "./images/family/kevin-durant-mother.jpg",
+        "src": "/images/family/kevin-durant-mother.jpg",
         "caption": "Every turkey handed to a family represents much more than a meal."
       },
       {
         "type": "text",
-        "src": "./images/family/kevin-durant-championships.jpg",
+        "src": "/images/family/kevin-durant-championships.jpg",
         "content": "Championships fade into history. Records are eventually broken. Even MVP trophies become part of the past. What lasts much longer is the impact people leave on the lives of others. Every turkey Kevin Durant and his mother give away tells a story that began long before the NBA ever knew his name. It tells the story of a mother who refused to surrender to hardship and a son who never forgot the sacrifices that made his success possible. Their legacy is not built only through basketball. It is built through gratitude, compassion, and the decision to lift others after climbing the mountain themselves. If you had the chance to change someone's life the way Wanda Durant changed Kevin's, what would you do? Share your thoughts in the comments below."
       }
     ],
