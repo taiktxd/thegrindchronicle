@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',           // Phải là '/' khi deploy Vercel
+  base: './', // 👈 Đổi từ '/' thành './' để chạy được trên CẢ Vercel LẪN GitHub Pages
   build: {
     outDir: 'dist',
     assetsDir: 'assets'
