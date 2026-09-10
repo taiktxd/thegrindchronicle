@@ -10,46 +10,34 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // 1. await params để lấy slug chuẩn Next.js 15
   const { slug } = await params; 
-
-  // 2. Tìm bài viết theo slug
   const post = posts.find((p) => p.slug === slug);
 
   if (!post) {
     return { title: "Post Not Found - The Grind Chronicle" };
   }
 
-  // 3. Tự động nối domain nếu coverImage là đường dẫn tương đối
   const SITE_URL = "https://thegrindchronicle.vercel.app";
-  const ogImageUrl = post.coverImage.startsWith("http")
-    ? post.coverImage
-    : `${SITE_URL}${post.coverImage}`;
+  
+  // Cắt ngắn description còn 120 chữ cho FB nó không cắt
+  const shortDesc = post.summary?.slice(0, 125) + "...";
 
-  // 4. Trả về Metadata chuẩn
   return {
     title: `${post.title} | The Grind Chronicle`,
-    description: post.summary,
+    description: shortDesc,
     openGraph: {
       title: post.title,
-      description: post.summary,
-      url: `${SITE_URL}/post/${post.slug}`, // Đã xóa khoảng trắng thừa!
+      description: shortDesc,
+      url: `${SITE_URL}/post/${post.slug}`,
       siteName: "The Grind Chronicle",
-      images: [
-        {
-          url: ogImageUrl, // Đảm bảo luôn là đường dẫn tuyệt đối https://...
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
       type: "article",
+      // XÓA HẾT images ở đây - để nó tự lấy từ opengraph-image.tsx 1200x630
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.summary,
-      images: [ogImageUrl],
+      description: shortDesc,
+      // XÓA images ở đây luôn
     },
   };
 }
