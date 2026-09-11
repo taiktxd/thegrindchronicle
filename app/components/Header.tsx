@@ -23,6 +23,7 @@ export default function Header() {
     { name: 'NBA', href: '/category/nba' },
     { name: 'LEGENDS', href: '/category/legends' },
     { name: 'MINDSET', href: '/category/mindset' },
+    { name: 'CONTACT', href: '/contact' },
   ];
 
   const today = new Date().toLocaleDateString('en-US', {

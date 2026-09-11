@@ -3,7 +3,9 @@ import Link from "next/link";
 import posts from "../../../data/posts.json";
 import { Metadata } from 'next';
 import PostActions from '../../components/PostActions';
-import GiscusComments from '../../components/GiscusComments';
+import CommentSection from '../../components/CommentSection';
+
+export const dynamic = 'force-dynamic';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -95,7 +97,7 @@ export default async function PostPage({ params }: Props) {
         <PostActions slug={slug} title={post.title} />
       </div>
       <div style={{ marginTop: "48px" }}>
-        <GiscusComments />
+        <CommentSection postSlug={slug} />
       </div>
     </article>
   );
