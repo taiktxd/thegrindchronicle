@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 import PostActions from '../../components/PostActions';
 import CommentSection from '../../components/CommentSection';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 type Props = {
   params: Promise<{ slug: string }>;
