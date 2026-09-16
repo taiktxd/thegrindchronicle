@@ -4,6 +4,7 @@ import posts from "../../../data/posts.json";
 import { Metadata } from 'next';
 import PostActions from '../../components/PostActions';
 import CommentSection from '../../components/CommentSection';
+import { Suspense } from 'react';
 
 export const revalidate = 60;
 
@@ -97,7 +98,9 @@ export default async function PostPage({ params }: Props) {
         <PostActions slug={slug} title={post.title} />
       </div>
       <div style={{ marginTop: "48px" }}>
-        <CommentSection postSlug={slug} />
+        <Suspense fallback={<p style={{ color: '#999', fontSize: '0.9rem' }}>Loading comments…</p>}>
+          <CommentSection postSlug={slug} />
+        </Suspense>
       </div>
     </article>
   );
