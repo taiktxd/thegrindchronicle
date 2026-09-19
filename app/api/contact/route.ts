@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // TODO: đổi thành email bạn muốn NHẬN liên hệ (Gmail hoặc email riêng của bạn)
-const RECEIVE_EMAIL = 'thegrindchronicle.contact@gmail.com';
+const RECEIVE_EMAIL = 'taiktxd@gmail.com';
 
 const subjectLabels: Record<string, string> = {
   tip: 'Story Tip',
