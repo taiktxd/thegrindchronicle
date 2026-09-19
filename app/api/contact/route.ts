@@ -8,7 +8,7 @@ const RECEIVE_EMAIL = 'thegrindchronicle.contact@gmail.com';
 
 const subjectLabels: Record<string, string> = {
   tip: 'Story Tip',
-  partnership: 'Hợp tác / Advertising',
+  partnership: 'Advertising',
   issue: 'Report an Issue',
   general: 'General',
 };
