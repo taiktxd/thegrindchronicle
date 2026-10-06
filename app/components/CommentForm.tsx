@@ -1,10 +1,23 @@
 'use client';
 
 import { useState } from 'react';
+import { supabaseAnon } from '@/lib/supabase';
+
+interface CommentItem {
+  id: string | number;
+  name: string;
+  message: string;
+  created_at: string;
+}
+
+interface CommentFormProps {
+  postSlug: string;
+  onCommentAdded?: (newComment: CommentItem) => void;
+}
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
-export default function CommentForm({ postSlug }: { postSlug: string }) {
+export default function CommentForm({ postSlug, onCommentAdded }: CommentFormProps) {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<Status>('idle');
@@ -15,61 +28,100 @@ export default function CommentForm({ postSlug }: { postSlug: string }) {
 
     setStatus('loading');
     try {
-      const res = await fetch('/api/comments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ postSlug, name, message }),
-      });
-      if (!res.ok) throw new Error('Request failed');
+      // Ghi trực tiếp vào Supabase với approved = true để hiển thị ngay
+      const { data, error } = await supabaseAnon
+        .from('comments')
+        .insert([
+          {
+            post_slug: postSlug,
+            name: name.trim(),
+            message: message.trim(),
+            approved: true,
+          },
+        ])
+        .select('id, name, message, created_at')
+        .single();
+
+      if (error) throw error;
+
+      // Đẩy bình luận mới vào danh sách hiển thị phía trên ngay lập tức
+      if (data && onCommentAdded) {
+        onCommentAdded(data);
+      }
+
       setStatus('success');
       setName('');
       setMessage('');
-    } catch {
+
+      // Tự động tắt thông báo thành công sau 4 giây
+      setTimeout(() => setStatus('idle'), 4000);
+    } catch (err) {
+      console.error('[CommentForm] Error:', err);
       setStatus('error');
     }
   };
 
-  if (status === 'success') {
-    return (
-      <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-md p-4">
-        Thank you for your comment! Your comment will appear after it has been approved.
-      </p>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg">
-      <input
-        type="text"
-        required
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Your name"
-        maxLength={80}
-        className="border-b border-gray-300 bg-transparent py-2 text-sm text-gray-800
-                   placeholder:text-gray-400 focus:outline-none focus:border-amber-600"
-      />
-      <textarea
-        required
-        rows={4}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Share your thoughts about the post…"
-        maxLength={2000}
-        className="border border-gray-300 rounded-md bg-transparent p-3 text-sm text-gray-800
-                   placeholder:text-gray-400 resize-none focus:outline-none focus:border-amber-600"
-      />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="self-start px-5 py-2 bg-amber-600 text-white text-sm font-bold uppercase tracking-wider
-                   rounded-full hover:bg-amber-700 transition-colors disabled:opacity-60"
-      >
-        {status === 'loading' ? 'Sending…' : 'Send Comment'}
-      </button>
-      {status === 'error' && (
-        <p className="text-sm text-red-600">An error occurred. Please try again.</p>
-      )}
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor="comment-name"
+          className="text-xs font-bold uppercase tracking-wider text-neutral-700 font-sans"
+        >
+          Your Name
+        </label>
+        <input
+          id="comment-name"
+          type="text"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. HoopSoul, Allen I."
+          maxLength={80}
+          className="w-full px-3.5 py-2 text-xs sm:text-sm text-neutral-900 bg-white border border-neutral-300 rounded-lg placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all font-sans"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor="comment-message"
+          className="text-xs font-bold uppercase tracking-wider text-neutral-700 font-sans"
+        >
+          Your Thought
+        </label>
+        <textarea
+          id="comment-message"
+          required
+          rows={4}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Share your perspective, memories, or reflections on this story…"
+          maxLength={2000}
+          className="w-full px-3.5 py-2.5 text-xs sm:text-sm text-neutral-900 bg-white border border-neutral-300 rounded-lg placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all resize-none font-serif leading-relaxed"
+          style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+        />
+      </div>
+
+      <div className="flex items-center justify-between pt-1">
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="px-6 py-2.5 bg-[#e67e22] hover:bg-neutral-950 text-white text-xs uppercase tracking-widest font-semibold rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-xs active:scale-95"
+        >
+          {status === 'loading' ? 'Posting…' : 'Send Comment →'}
+        </button>
+
+        {status === 'success' && (
+          <span className="text-xs text-green-700 font-medium">
+            ✓ Your thought has been published!
+          </span>
+        )}
+        {status === 'error' && (
+          <span className="text-xs text-red-600 font-medium">
+            Could not post comment. Please try again.
+          </span>
+        )}
+      </div>
     </form>
   );
 }

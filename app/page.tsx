@@ -6,189 +6,184 @@ export default async function Home({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  // 1. Lấy tất cả bài viết từ file JSON/MDX
   const allPosts = getAllPosts();
-
-  // 2. Xử lý phân trang qua URL query (?page=1, ?page=2)
   const resolvedSearchParams = await searchParams;
-  const currentPage = Number(resolvedSearchParams?.page) || 1;
-  const postsPerPage = 6;
+  
+  // Mỗi trang lưới phụ hiển thị tối đa 6 bài (chuẩn 2 hàng x 3 cột)
+  const POSTS_PER_GRID = 6;
 
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = allPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(allPosts.length / postsPerPage);
+  // Tính tổng số trang: Trang 1 chứa 1 Hero + 6 bài phụ (= 7 bài). Các trang sau chứa 6 bài.
+  const totalPages =
+    allPosts.length <= 7
+      ? 1
+      : 1 + Math.ceil((allPosts.length - 7) / POSTS_PER_GRID);
+
+  const rawPage = Number(resolvedSearchParams?.page) || 1;
+  const currentPage = Math.max(1, Math.min(rawPage, totalPages));
+  const isFirstPage = currentPage === 1;
+
+  let featuredPost = null;
+  let gridPosts: typeof allPosts = [];
+
+  if (isFirstPage) {
+    // Trang 1: 1 bài Hero tiêu điểm + đúng 6 bài lưới bên dưới
+    featuredPost = allPosts[0] || null;
+    gridPosts = allPosts.slice(1, 7);
+  } else {
+    // Trang 2 trở đi: Lấy đúng 6 bài, lấp đầy tròn vẹn lưới 3 cột
+    const startIndex = 7 + (currentPage - 2) * POSTS_PER_GRID;
+    gridPosts = allPosts.slice(startIndex, startIndex + POSTS_PER_GRID);
+  }
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
-      {/* Grid danh sách bài viết */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-          gap: "40px",
-        }}
-      >
-        {currentPosts.map((post) => (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      {/* ===== 1. HERO SECTION: BÀI TIÊU ĐIỂM (CHỈ Ở TRANG 1) ===== */}
+      {featuredPost && (
+        <section className="mb-8">
+          <Link
+            href={`/post/${featuredPost.slug}`}
+            className="group block no-underline text-inherit"
+          >
+            <article className="bg-white border border-neutral-200/80 border-l-4 border-l-[#e67e22] rounded-tl-xl rounded-bl-xl p-4 sm:p-6 lg:p-7 shadow-xs hover:shadow-md transition-shadow">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+                {/* Ảnh Hero */}
+                <div className="lg:col-span-6 overflow-hidden rounded-lg bg-neutral-100">
+                  {featuredPost.coverImage ? (
+                    <div className="w-full aspect-[16/9] overflow-hidden">
+                      <img
+                        src={featuredPost.coverImage}
+                        alt={featuredPost.title || ""}
+                        className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full aspect-[16/9] bg-neutral-100 flex items-center justify-center text-neutral-400 text-sm">
+                      No Image
+                    </div>
+                  )}
+                </div>
+
+                {/* Nội dung Hero */}
+                <div className="lg:col-span-6 flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <span className="px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-neutral-900 text-white rounded-xs">
+                      Story Of The Week
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#e67e22]">
+                      {featuredPost.category}
+                    </span>
+                  </div>
+
+                  <h2
+                    className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-neutral-950 leading-[1.25] mb-2.5 group-hover:text-[#e67e22] transition-colors"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  >
+                    {featuredPost.title}
+                  </h2>
+
+                  <p
+                    className="text-neutral-600 text-xs sm:text-sm leading-relaxed mb-4 font-serif line-clamp-3"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  >
+                    {featuredPost.summary}
+                  </p>
+
+                  <div className="flex items-center justify-between text-[11px] text-neutral-500 pt-3 border-t border-neutral-100 font-sans">
+                    <div>
+                      <span className="font-semibold text-neutral-800">
+                        {featuredPost.author}
+                      </span>{" "}
+                      • <span>{featuredPost.date}</span>
+                    </div>
+                    <span className="font-semibold text-neutral-900 group-hover:translate-x-1 group-hover:text-[#e67e22] transition-all inline-flex items-center gap-1">
+                      Read Story →
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </Link>
+        </section>
+      )}
+
+      {/* ===== THANH TIÊU ĐỀ NỐI (ĐÃ BỎ DẤU GẠCH NGANG) ===== */}
+      <div className="flex items-center justify-between mb-6 pb-2 border-b border-neutral-200">
+        <h3 className="text-xs uppercase tracking-widest font-bold text-neutral-800">
+          {isFirstPage ? "Latest Stories" : `Archive Page ${currentPage}`}
+        </h3>
+        <span className="text-[11px] text-neutral-400 font-serif italic">
+          More from the chronicle
+        </span>
+      </div>
+
+      {/* ===== 2. SECONDARY GRID (TỐI ĐA 6 BÀI, KHÔNG BỊ HỞ LỖ) ===== */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {gridPosts.map((post) => (
           <Link
             key={post.slug}
             href={`/post/${post.slug}`}
-            style={{ textDecoration: "none", color: "inherit" }}
+            className="group block no-underline text-inherit"
           >
-            <article
-              style={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                backgroundColor: "#fff",
-              }}
-            >
-              {/* Ảnh bìa bài viết */}
+            <article className="h-full flex flex-col">
               {post.coverImage ? (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "220px",
-                    overflow: "hidden",
-                    marginBottom: "16px",
-                  }}
-                >
+                <div className="w-full aspect-[16/10] overflow-hidden rounded-sm bg-neutral-100 mb-3">
                   <img
                     src={post.coverImage}
                     alt={post.title || ""}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
                 </div>
               ) : (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "220px",
-                    backgroundColor: "#f5f5f5",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#a0a0a0",
-                    fontSize: "0.9rem",
-                    marginBottom: "16px",
-                  }}
-                >
+                <div className="w-full aspect-[16/10] bg-neutral-100 flex items-center justify-center text-neutral-400 text-sm mb-3">
                   No Image
                 </div>
               )}
 
-              {/* Cụm thông tin bài viết */}
-              <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                <p
-                  style={{
-                    color: "#e67e22",
-                    fontSize: "0.75rem",
-                    fontWeight: "700",
-                    marginBottom: "8px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                  }}
-                >
+              <div className="flex-1 flex flex-col">
+                <p className="text-amber-700 text-[10px] font-bold uppercase tracking-widest mb-1.5">
                   {post.category}
                 </p>
 
-                <h2
-                  style={{
-                    fontSize: "1.25rem",
-                    fontWeight: "700",
-                    marginBottom: "12px",
-                    lineHeight: "1.35",
-                    color: "#111",
-                  }}
+                <h3
+                  className="font-serif text-lg font-bold leading-snug text-neutral-950 mb-2 group-hover:text-neutral-600 transition-colors"
+                  style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                 >
                   {post.title}
-                </h2>
+                </h3>
 
                 <p
-                  style={{
-                    color: "#555",
-                    fontSize: "0.9rem",
-                    lineHeight: "1.6",
-                    marginBottom: "16px",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                  }}
+                  className="text-neutral-600 text-xs sm:text-sm leading-relaxed mb-3 font-serif line-clamp-2"
+                  style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                 >
                   {post.summary}
                 </p>
 
-                <p
-                  style={{
-                    fontSize: "0.8rem",
-                    color: "#888",
-                    marginBottom: "16px",
-                  }}
-                >
-                  {post.author} • {post.date}
-                </p>
-
-                <p
-                  style={{
-                    fontSize: "0.85rem",
-                    fontWeight: "600",
-                    color: "#111",
-                    marginTop: "auto",
-                  }}
-                >
-                  Read Story →
-                </p>
+                <div className="mt-auto pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-500 font-sans">
+                  <span>
+                    {post.author} • {post.date}
+                  </span>
+                  <span className="font-medium text-neutral-900 group-hover:underline">
+                    Read →
+                  </span>
+                </div>
               </div>
             </article>
           </Link>
         ))}
-      </div>
+      </section>
 
-      {/* Cụm Phân trang (Pagination) */}
+      {/* ===== 3. PHÂN TRANG (PAGINATION) ===== */}
       {totalPages > 1 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "10px",
-            marginTop: "60px",
-            marginBottom: "40px",
-          }}
-        >
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-12 mb-6 font-sans">
           {currentPage > 1 ? (
             <Link
               href={`/?page=${currentPage - 1}`}
-              style={{
-                padding: "8px 16px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                background: "white",
-                textDecoration: "none",
-                color: "#333",
-                fontSize: "0.9rem",
-              }}
+              className="px-3 py-1.5 border border-neutral-300 rounded text-xs text-neutral-700 bg-white hover:border-neutral-900 transition-colors"
             >
               Previous
             </Link>
           ) : (
-            <span
-              style={{
-                padding: "8px 16px",
-                border: "1px solid #eee",
-                borderRadius: "4px",
-                background: "#f9f9f9",
-                color: "#ccc",
-                cursor: "not-allowed",
-                fontSize: "0.9rem",
-              }}
-            >
+            <span className="px-3 py-1.5 border border-neutral-200 rounded text-xs text-neutral-300 bg-neutral-50 cursor-not-allowed">
               Previous
             </span>
           )}
@@ -200,15 +195,11 @@ export default async function Home({
               <Link
                 key={pageNum}
                 href={`/?page=${pageNum}`}
-                style={{
-                  padding: "8px 14px",
-                  border: isActive ? "1px solid #111" : "1px solid #ddd",
-                  borderRadius: "4px",
-                  background: isActive ? "#111" : "white",
-                  color: isActive ? "white" : "#333",
-                  textDecoration: "none",
-                  fontSize: "0.9rem",
-                }}
+                className={`px-3 py-1.5 border rounded text-xs transition-colors ${
+                  isActive
+                    ? "border-neutral-950 bg-neutral-950 text-white font-medium"
+                    : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
+                }`}
               >
                 {pageNum}
               </Link>
@@ -218,30 +209,12 @@ export default async function Home({
           {currentPage < totalPages ? (
             <Link
               href={`/?page=${currentPage + 1}`}
-              style={{
-                padding: "8px 16px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                background: "white",
-                textDecoration: "none",
-                color: "#333",
-                fontSize: "0.9rem",
-              }}
+              className="px-3 py-1.5 border border-neutral-300 rounded text-xs text-neutral-700 bg-white hover:border-neutral-900 transition-colors"
             >
               Next
             </Link>
           ) : (
-            <span
-              style={{
-                padding: "8px 16px",
-                border: "1px solid #eee",
-                borderRadius: "4px",
-                background: "#f9f9f9",
-                color: "#ccc",
-                cursor: "not-allowed",
-                fontSize: "0.9rem",
-              }}
-            >
+            <span className="px-3 py-1.5 border border-neutral-200 rounded text-xs text-neutral-300 bg-neutral-50 cursor-not-allowed">
               Next
             </span>
           )}

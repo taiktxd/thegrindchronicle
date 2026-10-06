@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,13 +13,10 @@ export default function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
-    // Điều hướng người dùng tới trang search với từ khóa
     router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   };
 
   const navItems = [
-    { name: 'HOME', href: '/' },
     { name: 'NBA', href: '/category/nba' },
     { name: 'LEGENDS', href: '/category/legends' },
     { name: 'MINDSET', href: '/category/mindset' },
@@ -34,94 +31,113 @@ export default function Header() {
   });
 
   return (
-    <header className="w-full bg-[#FBFAF7] text-[#1A1A1A]">
-      {/* ===== Utility bar — cảm giác "tòa soạn" ===== */}
-      <div className="w-full bg-[#e67e22] text-[#D9D9D9]">
-        <div className="max-w-6xl mx-auto px-4 h-8 flex items-center justify-between text-[11px] tracking-wide">
-          <span className="hidden sm:inline">{today}</span>
+    <header className="w-full bg-[#fcfbf9] text-[#1a1a1a] border-b border-neutral-200">
+      {/* ===== 1. TOP UTILITY BAR ===== */}
+      <div className="w-full border-b border-neutral-200/80 bg-white/60">
+        <div className="max-w-6xl mx-auto px-4 h-9 flex items-center justify-between text-[11px] tracking-wider text-neutral-500 font-sans">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-neutral-700">{today}</span>
+            <span className="text-neutral-300">|</span>
+            <span className="uppercase text-[10px] tracking-widest text-neutral-500 font-semibold">
+              Rucker Park, NYC
+            </span>
+          </div>
+
           <div className="flex items-center gap-4">
-            <a
-              href="https://www.threads.net/@hoop_soul"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-amber-500 transition-colors"
+            <div className="flex items-center gap-3 text-[11px] tracking-wider">
+              <a
+                href="https://www.threads.net/@hoop_soul"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-black transition-colors"
+              >
+                Threads
+              </a>
+              <span className="text-neutral-300">/</span>
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-black transition-colors"
+              >
+                Facebook
+              </a>
+            </div>
+
+            <span className="text-neutral-200">|</span>
+
+            <button
+              type="button"
+              className="text-[10px] uppercase tracking-widest font-medium px-3 py-1 rounded-full border border-neutral-800 text-neutral-800 hover:bg-neutral-900 hover:text-white transition-all"
             >
-              Threads
-            </a>
-            <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-amber-500 transition-colors"
-            >
-              Facebook
-            </a>
+              Subscribe
+            </button>
           </div>
         </div>
       </div>
 
-      {/* ===== Masthead ===== */}
-      <div className="max-w-6xl mx-auto px-4 pt-10 pb-6 flex flex-col items-center">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', textAlign: 'center' }}>
-          {/* Logo */}
-          <Image
-            src="/logo.png"
-            alt="The Grind Chronicle"
-            width={80}
-            height={80}
-            style={{ width: 56, height: 56, objectFit: 'contain' }}
-          />
-
-          {/* Chữ */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.1 }}>
-            <span
-              style={{
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                fontWeight: 700,
-                letterSpacing: '0.01em',
-                fontSize: 'clamp(1.9rem, 4.5vw, 3.1rem)',
-                textTransform: 'uppercase',
-                color: '#1A1A1A',
-              }}
-            >
-              The Grind Chronicle
-            </span>
-            <span
-              style={{
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                fontStyle: 'italic',
-                color: '#7A7A7A',
-                fontSize: '0.95rem',
-                marginTop: 5,
-              }}
-            >
-              Stories Behind Greatness.
-            </span>
-          </div>
-        </div>
+      {/* ===== 2. MASTHEAD WORDMARK ===== */}
+      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10 flex flex-col items-center justify-center text-center">
+        <Link href="/" className="inline-flex flex-col items-center group">
+          <h1
+            className="font-serif font-black uppercase text-neutral-950 transition-opacity group-hover:opacity-90"
+            style={{
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontSize: 'clamp(2rem, 5vw, 3.25rem)',
+              letterSpacing: '-0.015em',
+              lineHeight: 1.05,
+            }}
+          >
+            The Grind Chronicle
+          </h1>
+          <p
+            className="italic text-neutral-500 font-serif text-xs sm:text-sm tracking-wide mt-2"
+            style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+          >
+            Stories Behind Greatness.
+          </p>
+        </Link>
       </div>
 
-      {/* ===== Thanh điều hướng ===== */}
-      <div className="w-full border-b-2 border-[#e67e22]">
-        <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-around">
-          <div></div>
-          {/* Navigation Links */}
-          <nav className="flex items-center gap-6 md:gap-8 overflow-x-auto">
+      {/* ===== 3. NAVIGATION (LOGO TRONG SUỐT, KHÔNG CÒN GẠCH DỌC) ===== */}
+      <div className="w-full border-t border-neutral-200 bg-[#fcfbf9]">
+        <div className="relative max-w-6xl mx-auto px-4 h-12 flex items-center justify-center">
+          
+          <nav className="flex items-center gap-6 sm:gap-8 overflow-x-auto min-w-0 [&::-webkit-scrollbar]:hidden">
+            {/* LOGO NÚT HOME: Tinh gọn, dùng ảnh /logo.png đã xóa nền */}
+            <Link
+              href="/"
+              title="Home"
+              className="flex items-center shrink-0 hover:scale-105 transition-transform"
+            >
+              <div className="relative w-6 h-6 sm:w-7 sm:h-7">
+                <Image
+                  src="/logo.png"
+                  alt="TGC Home"
+                  fill
+                  sizes="28px"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </Link>
+
+            {/* Danh mục */}
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="relative text-[13px] md:text-sm font-semibold uppercase tracking-[0.12em] text-[#1A1A1A] py-4 whitespace-nowrap
+                className="relative text-[12px] sm:text-[13px] font-semibold uppercase tracking-[0.14em] text-neutral-700 hover:text-neutral-950 py-3.5 whitespace-nowrap shrink-0 transition-colors
                            after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px]
-                           after:bg-amber-600 after:scale-x-0 hover:after:scale-x-100 after:origin-left after:transition-transform"
+                           after:bg-neutral-900 after:scale-x-0 hover:after:scale-x-100 after:origin-center after:transition-transform"
               >
                 {item.name}
               </Link>
             ))}
           </nav>
 
-          {/* Search — thu gọn kiểu báo chí, bấm icon mới mở ô nhập */}
-          <div className="flex items-center">
+          {/* Ô Tìm kiếm góc phải */}
+          <div className="absolute right-4 flex items-center">
             {searchOpen && (
               <form onSubmit={handleSearch} className="flex items-center mr-2">
                 <input
@@ -131,8 +147,7 @@ export default function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={() => !searchQuery && setSearchOpen(false)}
-                  className="w-36 sm:w-48 md:w-56 border-b border-[#1A1A1A] bg-transparent px-1 py-1 text-sm
-                             text-[#1A1A1A] placeholder:text-[#9A9A9A] focus:outline-none"
+                  className="w-28 sm:w-44 border-b border-neutral-900 bg-transparent px-1 py-0.5 text-xs text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
                   style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                 />
               </form>
@@ -147,18 +162,20 @@ export default function Header() {
                 setSearchOpen((v) => !v);
               }}
               title="Search"
-              className="p-2 text-[#1A1A1A] hover:text-amber-600 transition-colors"
+              aria-label="Search"
+              className="p-1.5 text-neutral-600 hover:text-neutral-950 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2.5"
+                  strokeWidth="2"
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
             </button>
           </div>
+
         </div>
       </div>
     </header>

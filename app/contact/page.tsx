@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 
 const subjects = [
   { value: 'tip', label: 'Story Tip' },
@@ -13,14 +12,13 @@ const subjects = [
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
 export default function ContactPage() {
-
   const [form, setForm] = useState({
     name: '',
     email: '',
     subject: 'general',
     message: '',
   });
-  
+
   const [status, setStatus] = useState<Status>('idle');
 
   const handleChange = (
@@ -49,179 +47,203 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="w-full bg-[#FBFAF7] min-h-screen">
-      {/* ===== Page masthead ===== */}
-      <div className="max-w-6xl mx-auto px-4 pt-14 pb-8 border-b-2 border-amber-600 flex flex-col items-center text-center">
-        <Image
-          src="/logo.png"
-          alt="The Grind Chronicle"
-          width={56}
-          height={56}
-          className="w-12 h-12 object-contain mb-3"
-        />
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+      {/* ===== 1. TIÊU ĐỀ TRANG CHUẨN TÒA SOẠN ===== */}
+      <div className="text-center max-w-xl mx-auto mb-12 sm:mb-14">
+        <div className="inline-flex items-center gap-2 mb-3">
+          <span className="w-2 h-2 rounded-full bg-[#e67e22]" />
+          <span className="text-[11px] uppercase tracking-widest font-bold text-neutral-500 font-sans">
+            Editorial Desk
+          </span>
+        </div>
         <h1
-          className="uppercase font-bold"
-          style={{
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            fontSize: 'clamp(1.8rem, 5vw, 2.8rem)',
-            color: '#1A1A1A',
-            letterSpacing: '0.02em',
-          }}
+          className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-950 tracking-tight mb-3"
+          style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
         >
           Get In Touch
         </h1>
         <p
-          className="italic text-[#666] mt-2 max-w-md"
+          className="text-sm sm:text-base text-neutral-500 font-serif italic"
           style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
         >
           Have a story? A tip? Or just want to talk hoops?
         </p>
       </div>
 
-      {/* ===== Content ===== */}
-      <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-12">
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="md:col-span-2 flex flex-col gap-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-gray-700">
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Your name"
-                className="border-b border-gray-300 bg-transparent py-2 text-gray-800 placeholder:text-gray-400
-                           focus:outline-none focus:border-amber-600 transition-colors"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-gray-700">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={form.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                className="border-b border-gray-300 bg-transparent py-2 text-gray-800 placeholder:text-gray-400
-                           focus:outline-none focus:border-amber-600 transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor="subject" className="text-xs font-bold uppercase tracking-wider text-gray-700">
-              Subject
-            </label>
-            <select
-              id="subject"
-              name="subject"
-              value={form.subject}
-              onChange={handleChange}
-              className="border-b border-gray-300 bg-transparent py-2 text-gray-800
-                         focus:outline-none focus:border-amber-600 transition-colors"
-            >
-              {subjects.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor="message" className="text-xs font-bold uppercase tracking-wider text-gray-700">
-              Message
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              required
-              rows={6}
-              value={form.message}
-              onChange={handleChange}
-              placeholder="Tell us your story, idea, or question…"
-              className="border border-gray-300 rounded-md bg-transparent p-3 text-gray-800 placeholder:text-gray-400
-                         resize-none focus:outline-none focus:border-amber-600 transition-colors"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={status === 'loading'}
-            className="self-start mt-2 px-6 py-2.5 bg-amber-600 text-white font-bold uppercase tracking-wider text-sm
-                       rounded-full hover:bg-amber-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {status === 'loading' ? 'Sending…' : 'Send It In →'}
-          </button>
-
-          {status === 'success' && (
-            <p className="text-sm text-green-700">
-              Thanks — your message is in. We usually reply within 2–3 days.
-            </p>
-          )}
-          {status === 'error' && (
-            <p className="text-sm text-red-600">
-              Something went wrong. Try again, or email us directly below.
-            </p>
-          )}
-        </form>
-
-        {/* Side info */}
-        <aside className="flex flex-col gap-8">
+      {/* ===== 2. KHUNG NỘI DUNG 2 CỘT CÂN XỨNG ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        {/* CỘT TRÁI: THÔNG TIN TÒA SOẠN & KẾT NỐI (5 Cột) */}
+        <aside className="lg:col-span-5 flex flex-col space-y-8 lg:pr-8 border-b lg:border-b-0 lg:border-r border-neutral-200 pb-10 lg:pb-0">
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-              Direct
+            <h2 className="text-xs font-bold uppercase tracking-widest text-neutral-900 mb-2.5 font-sans">
+              Story Pitches & Submissions
             </h2>
+            <p
+              className="text-sm text-neutral-600 leading-relaxed font-serif"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+            >
+              We are constantly searching for stories of perseverance, sacrifice, and the quiet moments behind greatness. If you know a story that deserves to be told, reach out to us.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5 font-sans">
+              Direct Inquiries
+            </h3>
             <a
               href="mailto:thegrindchronicle.contact@gmail.com"
-              className="text-gray-800 hover:text-amber-600 transition-colors"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+              className="text-sm sm:text-base font-medium text-neutral-900 hover:text-[#e67e22] transition-colors"
             >
               thegrindchronicle.contact@gmail.com
             </a>
           </div>
 
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-              Follow
-            </h2>
-            <div className="flex flex-col gap-1">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-2 font-sans">
+              Community & Social
+            </h3>
+            <div className="flex items-center gap-4 text-sm font-medium text-neutral-700">
               <a
                 href="https://www.threads.net/@hoop_soul"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-800 hover:text-amber-600 transition-colors"
+                className="hover:text-black hover:underline"
               >
-                Threads
+                Threads ↗
               </a>
+              <span className="text-neutral-300">•</span>
               <a
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-800 hover:text-amber-600 transition-colors"
+                className="hover:text-black hover:underline"
               >
-                Facebook
+                Facebook ↗
               </a>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-500 italic">
-              We usually reply within 2–3 days.
+          <div className="pt-4 border-t border-neutral-100">
+            <p className="text-xs text-neutral-400 font-serif italic leading-relaxed">
+              We read every message and usually reply within 2–3 days.
             </p>
           </div>
         </aside>
+
+        {/* CỘT PHẢI: FORM GỬI TIN (7 Cột) */}
+        <div className="lg:col-span-7">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Tên */}
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-2 font-sans"
+                >
+                  Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Your name"
+                  className="w-full px-4 py-2.5 text-sm text-neutral-900 bg-white border border-neutral-300 rounded-lg placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-2 font-sans"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  className="w-full px-4 py-2.5 text-sm text-neutral-900 bg-white border border-neutral-300 rounded-lg placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Chủ đề */}
+            <div>
+              <label
+                htmlFor="subject"
+                className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-2 font-sans"
+              >
+                Subject
+              </label>
+              <select
+                id="subject"
+                name="subject"
+                value={form.subject}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 text-sm text-neutral-900 bg-white border border-neutral-300 rounded-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all cursor-pointer"
+              >
+                {subjects.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Lời nhắn */}
+            <div>
+              <label
+                htmlFor="message"
+                className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-2 font-sans"
+              >
+                Message
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                required
+                rows={5}
+                value={form.message}
+                onChange={handleChange}
+                placeholder="Tell us your story, idea, or question…"
+                className="w-full px-4 py-3 text-sm text-neutral-900 bg-white border border-neutral-300 rounded-lg placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all resize-none font-serif leading-relaxed"
+                style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+              />
+            </div>
+
+            {/* Thông báo trạng thái */}
+            {status === 'success' && (
+              <div className="p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-xs">
+                ✓ Thanks — your message is in. We usually reply within 2–3 days.
+              </div>
+            )}
+            {status === 'error' && (
+              <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
+                Something went wrong. Try again, or email us directly at thegrindchronicle.contact@gmail.com.
+              </div>
+            )}
+
+            {/* Nút gửi */}
+            <div className="pt-2 flex justify-end">
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="px-7 py-3 bg-neutral-950 text-white text-xs uppercase tracking-widest font-semibold rounded-lg hover:bg-[#e67e22] active:scale-95 transition-all shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {status === 'loading' ? 'Sending…' : 'Send It In →'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
