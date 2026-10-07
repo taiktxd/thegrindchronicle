@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(slug);
 
   if (!post) {
-    return { title: "Post Not Found - The Grind Chronicle" };
+    return { title: "Post Not Found" };
   }
 
   const SITE_URL = "https://thegrindchronicle.vercel.app";
@@ -42,15 +42,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? rawSummary.slice(0, 122) + "..."
     : rawSummary || "Stories Behind Greatness from The Grind Chronicle";
 
-  // Lấy ảnh bìa của bài viết (nếu bài nào không có ảnh thì lấy fallback)
-  const coverImage = (post.coverImage || post.image || "") as string;
-  const postImageUrl = coverImage.startsWith('http')
+  // Lấy ảnh bìa hoặc dùng ảnh mặc định của trang web nếu bài viết thiếu ảnh
+  const coverImage = (post.coverImage || post.image || "/default-og.jpg") as string;
+  const normalizedPath = coverImage.startsWith("/") ? coverImage : `/${coverImage}`;
+  const postImageUrl = coverImage.startsWith("http")
     ? coverImage
-    : `${SITE_URL}${coverImage}`;
-
+    : `${SITE_URL}${normalizedPath}`;
   return {
     metadataBase: new URL(SITE_URL),
-    title: `${title} | The Grind Chronicle`,
+    // Chỉ truyền title gốc, layout.tsx sẽ tự ghép thành: "The Park With No Lights | The Grind Chronicle" (45 ký tự)
+    title: title,
     description: shortDesc,
     alternates: {
       canonical: `/post/${slug}`,
