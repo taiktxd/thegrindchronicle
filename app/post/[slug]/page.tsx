@@ -42,6 +42,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? rawSummary.slice(0, 122) + "..."
     : rawSummary || "Stories Behind Greatness from The Grind Chronicle";
 
+  // Lấy ảnh bìa của bài viết (nếu bài nào không có ảnh thì lấy fallback)
+  const coverImage = (post.coverImage || post.image || "") as string;
+  const postImageUrl = coverImage.startsWith('http')
+    ? coverImage
+    : `${SITE_URL}${coverImage}`;
+
   return {
     metadataBase: new URL(SITE_URL),
     title: `${title} | The Grind Chronicle`,
@@ -55,11 +61,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `${SITE_URL}/post/${slug}`,
       siteName: "The Grind Chronicle",
       type: "article",
+      images: coverImage
+        ? [
+            {
+              url: postImageUrl,
+              width: 1200,
+              height: 630,
+              alt: title,
+            },
+          ]
+        : [],
     },
     twitter: {
       card: "summary_large_image",
       title: title,
       description: shortDesc,
+      images: coverImage ? [postImageUrl] : [],
     },
   };
 }
