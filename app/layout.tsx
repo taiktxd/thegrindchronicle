@@ -3,6 +3,7 @@ import './globals.css';
 import Header from './components/Header'; 
 import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://thegrindchronicle.com'),
@@ -38,6 +39,9 @@ export default function RootLayout({
         <main>{children}</main>
         <Footer />
         <Analytics />
+        
+        {/* Google Analytics 4 */}
+        <GoogleAnalytics gaId="G-G6Y8EP13JN" />
       </body>
     </html>
   );
