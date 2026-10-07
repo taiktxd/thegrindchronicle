@@ -6,7 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://thegrindchronicle.com'),
+  metadataBase: new URL('https://thegrindchronicle.vercel.app'),
   title: {
     default: 'The Grind Chronicle | Stories Behind Greatness',
     template: '%s | The Grind Chronicle',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'The Grind Chronicle',
     description: 'Stories Behind Greatness.',
-    url: 'https://thegrindchronicle.com',
+    url: 'https://thegrindchronicle.vercel.app',
     siteName: 'The Grind Chronicle',
     locale: 'en_US',
     type: 'website',
