@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import PostActions from '../../components/PostActions';
 import CommentSection from '../../components/CommentSection';
 import { Suspense } from 'react';
+import NativeAdBanner from '../../components/NativeAdBanner';
 
 export const revalidate = 60;
 
@@ -93,6 +94,7 @@ export default async function PostPage({ params }: Props) {
             return null;
           })}
       </div>
+      <NativeAdBanner />
       <div style={{ marginTop: "60px", paddingTop: "24px", borderTop: "1px solid #edf2f7", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
         <Link href="/" style={{ display: "inline-block", padding: "8px 16px", borderRadius: "6px", textDecoration: "none", color: "#4a5568", fontWeight: "500", fontSize: "0.95rem", backgroundColor: "#f7fafc", border: "1px solid #e2e8f0" }}>← Back to Stories</Link>
         <PostActions slug={slug} title={post.title} />

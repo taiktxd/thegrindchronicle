@@ -10,16 +10,16 @@ const faqs = [
     a: "Scroll to the bottom of any article, fill in your name and message under \"Discussion & Reader Thoughts,\" and submit. Comments are reviewed before they appear publicly, so yours may take a little while to show up.",
   },
   {
-    q: "I have a story idea or a tip — who do I tell?",
-    a: 'Head to the Contact page and choose "Story Tip / Góp ý câu chuyện" from the subject dropdown. We read every submission.',
+    q: "I have a story idea or a tip. who do I tell?",
+    a: 'Head to the Contact page and choose "Story Tip" from the subject dropdown. We read every submission.',
   },
   {
     q: 'I found a typo or a broken link. How do I report it?',
-    a: 'Use the Contact page and choose "Report an Issue." Include the article title or URL if you can — it helps us fix it faster.',
+    a: 'Use the Contact page and choose "Report an Issue." Include the article title or URL if you can, it helps us fix it faster.',
   },
   {
     q: "I'm interested in advertising or a partnership.",
-    a: 'Reach out through the Contact page and choose "Hợp tác / Advertising." We usually reply within 2–3 days.',
+    a: 'Reach out through the Contact page and choose "Partnership / Advertising." We usually reply within 2–3 days.',
   },
   {
     q: 'Do I need an account to use this site?',
