@@ -70,7 +70,7 @@ export default function Header() {
   // Hàm xử lý Đăng xuất / Xóa email đã lưu
   const handleLogout = () => {
     localStorage.removeItem('tgc_subscriber_email');
-    setClientEmail('');
+    setClientEmail(null);
     window.dispatchEvent(new Event('storage'));
     setUserMenuOpen(false);
   };

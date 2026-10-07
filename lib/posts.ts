@@ -7,10 +7,12 @@ const postsDirectory = path.join(process.cwd(), 'content', 'posts');
 export interface PostMetaData {
   title?: string;
   summary?: string;
+  excerpt?: string;    // 👈 Thêm dòng này để nhận diện frontmatter excerpt của MDX
   date?: string;
   category?: string;
   author?: string;
   coverImage?: string;
+  image?: string;      // 👈 Thêm dòng này để nhận diện frontmatter image của MDX
   tags?: string[];
   [key: string]: unknown;
 }

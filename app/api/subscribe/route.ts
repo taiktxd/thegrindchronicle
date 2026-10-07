@@ -2,13 +2,11 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
-// Khởi tạo Supabase client sử dụng service role để ghi dữ liệu an toàn
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
-// Khởi tạo Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
@@ -21,27 +19,37 @@ export async function POST(req: Request) {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Lưu email vào bảng subscribers trên Supabase
-    const { error: dbError } = await supabase
+    // 1. Kiểm tra xem email đã có trong danh sách độc giả chưa
+    const { data: existing } = await supabase
       .from('subscribers')
-      .upsert({ email: cleanEmail }, { onConflict: 'email' });
+      .select('email')
+      .eq('email', cleanEmail)
+      .maybeSingle();
 
-    if (dbError) {
-      console.error('Supabase error:', dbError);
+    if (existing) {
+      // Độc giả cũ -> Chỉ xác nhận, không gửi email chào mừng lặp lại
+      return NextResponse.json({ success: true, already: true });
+    }
+
+    // 2. Độc giả mới -> Ghi vào Supabase
+    const { error: insertError } = await supabase
+      .from('subscribers')
+      .insert([{ email: cleanEmail }]);
+
+    if (insertError) {
+      console.error('Supabase error:', insertError);
       return NextResponse.json({ error: 'Failed to record subscription.' }, { status: 500 });
     }
 
-    // 2. Gửi email chào mừng từ The Grind Chronicle
+    // 3. Gửi email chào mừng bằng tiếng Việt chuẩn
     if (process.env.RESEND_API_KEY) {
       await resend.emails.send({
-        // Khi dùng tài khoản Resend miễn phí chưa gắn domain riêng, dùng tạm: onboarding@resend.dev
         from: 'The Grind Chronicle <onboarding@resend.dev>',
         to: cleanEmail,
         subject: 'Welcome to The Grind Chronicle | Stories Behind Greatness',
         html: `
           <div style="background-color: #fcfbf9; padding: 40px 20px; font-family: 'Georgia', serif; color: #1a1a1a; line-height: 1.6;">
             <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 40px 32px;">
-              
               <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #1a1a1a; padding-bottom: 20px;">
                 <h1 style="font-size: 24px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 900;">
                   The Grind Chronicle
@@ -78,9 +86,10 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
+    return NextResponse.json({ success: true, already: false });
+  } catch (err: unknown) {
     console.error('Subscription API error:', err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const errorMessage = err instanceof Error ? err.message : 'Internal Server Error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

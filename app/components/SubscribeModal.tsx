@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { supabaseAnon } from '@/lib/supabase';
+import { useState, useEffect, useCallback } from 'react';
 
 interface SubscribeModalProps {
   isOpen: boolean;
@@ -15,42 +14,56 @@ export default function SubscribeModal({ isOpen, onClose, onSuccess }: Subscribe
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<Status>('idle');
 
-  // Đóng modal khi bấm phím ESC
+  // Hàm đóng modal và dọn dẹp state sạch sẽ
+  const handleClose = useCallback(() => {
+    setStatus('idle');
+    setEmail('');
+    onClose();
+  }, [onClose]);
+
+  // Đóng modal khi bấm phím ESC (an toàn, không gọi setState trong thân useEffect)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
     };
+
     if (isOpen) {
       window.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
     }
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email.trim()) return;
 
     setStatus('loading');
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      const { error } = await supabaseAnon
-        .from('subscribers')
-        .insert([{ email: normalizedEmail }]);
 
-      if (error) {
-        // Lỗi trùng email (đã đăng ký từ trước)
-        if (error.code === '23505') {
-          setStatus('already');
-          onSuccess(normalizedEmail);
-          return;
-        }
-        throw error;
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Subscription failed');
+      }
+
+      if (data.already) {
+        setStatus('already');
+        onSuccess(normalizedEmail);
+        return;
       }
 
       setStatus('success');
@@ -65,7 +78,7 @@ export default function SubscribeModal({ isOpen, onClose, onSuccess }: Subscribe
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Lớp nền mờ */}
       <div
-        onClick={onClose}
+        onClick={handleClose}
         className="fixed inset-0 bg-neutral-950/60 backdrop-blur-xs transition-opacity"
       />
 
@@ -73,7 +86,7 @@ export default function SubscribeModal({ isOpen, onClose, onSuccess }: Subscribe
       <div className="relative w-full max-w-md bg-[#fcfbf9] border border-neutral-200 rounded-2xl shadow-2xl p-7 sm:p-8 z-10 animate-in fade-in zoom-in-95 duration-200">
         {/* Nút đóng (X) */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           type="button"
           aria-label="Close modal"
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 transition-colors p-1"
@@ -81,7 +94,7 @@ export default function SubscribeModal({ isOpen, onClose, onSuccess }: Subscribe
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
-        </button>   
+        </button>
 
         {status === 'success' || status === 'already' ? (
           <div className="text-center py-4">
@@ -104,7 +117,7 @@ export default function SubscribeModal({ isOpen, onClose, onSuccess }: Subscribe
             </p>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-6 py-2 bg-neutral-900 text-white text-xs uppercase tracking-wider font-semibold rounded-lg hover:bg-[#e67e22] transition-colors"
             >
               Close
