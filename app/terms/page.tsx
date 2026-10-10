@@ -23,7 +23,7 @@ export default function TermsPage() {
             Articles, images, and other original material published on this site are
             the property of The Grind Chronicle unless otherwise credited. You&apos;re
             welcome to share links to our stories. Please don&apos;t republish or
-            reproduce full articles elsewhere without asking first — reach out via the
+            reproduce full articles elsewhere without asking first, reach out via the
             Contact page.
           </p>
         </section>
@@ -46,7 +46,7 @@ export default function TermsPage() {
           </h2>
           <p>
             Our stories focus on the human and emotional side of NBA figures&apos;
-            lives — not breaking news or transactional reporting. We do our best to
+            lives. Not breaking news or transactional reporting. We do our best to
             represent these stories faithfully based on publicly available interviews
             and reporting, but some details may be dramatized or simplified for
             narrative flow. This site is not affiliated with the NBA or any team,

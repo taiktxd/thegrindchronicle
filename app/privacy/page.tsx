@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <p className="mt-2">
             <strong>Contact form.</strong> When you use the Contact page, your name,
             email address, and message are sent directly to our inbox by email. This
-            information is not stored in any database — it exists only as an email.
+            information is not stored in any database, it exists only as an email.
           </p>
         </section>
 
