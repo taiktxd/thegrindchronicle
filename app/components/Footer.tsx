@@ -1,147 +1,91 @@
-'use client';
-
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-[#111111] text-neutral-300 border-t-2 border-[#e67e22] mt-16 font-sans">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        {/* ===== KHUNG 3 CỘT NỘI DUNG CHÍNH ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 pb-12 border-b border-neutral-800">
-          
-          {/* CỘT 1: THƯƠNG HIỆU & SỨ MỆNH (6 Cột) */}
-          <div className="md:col-span-6 flex flex-col items-start">
-            <h2
-              className="font-serif font-black uppercase tracking-tight text-white text-2xl sm:text-3xl mb-2"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              The Grind Chronicle
-            </h2>
-            <p
-              className="font-serif italic text-neutral-400 text-sm sm:text-base mb-4"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              Stories Behind Greatness.
-            </p>
-            <p
-              className="text-sm text-neutral-300 leading-relaxed max-w-md font-serif"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              An independent chronicle devoted to the untold sacrifices, resilience, and human emotion behind basketball’s greatest journeys. From local blacktops to championship stages.
-            </p>
+    <footer className="w-full bg-neutral-950 text-white mt-12 sm:mt-16">
+      {/* 1. THANH CHỈ CAM MẢNH TINH TẾ (2px sắc nét, không còn bị thô) */}
+      <div className="w-full h-[2px] bg-[#e67e22]"></div>
+
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-12 flex flex-col items-center text-center">
+        
+        {/* 2. KHỐI THƯƠNG HIỆU */}
+        <Link href="/" className="inline-flex flex-col items-center group mb-5">
+          <div className="mb-3 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-200">
+            <Image
+              src="/logo.png"
+              alt="TGC Logo"
+              width={36}
+              height={36}
+              className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
+            />
           </div>
 
-          {/* CỘT 2: ĐIỀU HƯỚNG BÀI VIẾT (3 Cột) */}
-          <div className="md:col-span-3">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 font-sans">
-              Sections
-            </h3>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link href="/category/nba" className="text-neutral-300 hover:text-white hover:underline transition-colors">
-                  NBA Stories
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/legends" className="text-neutral-300 hover:text-white hover:underline transition-colors">
-                  Legends & Legacy
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/mindset" className="text-neutral-300 hover:text-white hover:underline transition-colors">
-                  Mindset & Grit
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-neutral-300 hover:text-white hover:underline transition-colors">
-                  Editorial Desk (Contact)
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* CỘT 3: KẾT NỐI & PHÁP LÝ (3 Cột) */}
-          <div className="md:col-span-3">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 font-sans">
-              Connect & Legal
-            </h3>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a
-                  href="https://www.threads.net/@hoop_soul"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-neutral-300 hover:text-white hover:underline transition-colors"
-                >
-                  Threads ↗
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-neutral-300 hover:text-white hover:underline transition-colors"
-                >
-                  Facebook ↗
-                </a>
-              </li>
-              <li className="pt-2 border-t border-neutral-800">
-                <Link href="/privacy" className="text-neutral-300 hover:text-white hover:underline transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-neutral-300 hover:text-white hover:underline transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link href="/support" className="text-neutral-300 hover:text-white hover:underline transition-colors">
-                  Support
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-        </div>
-
-        {/* ===== THANH ĐÁY (COPYRIGHT & NÚT MŨI TÊN LÊN NỔI BẬT) ===== */}
-        <div className="pt-8 flex items-center justify-between text-sm text-neutral-500">
-          <p>© 2026 The Grind Chronicle. All rights reserved.</p>
-
-          {/* Nút Back to Top: Icon mũi tên tròn nổi bật */}
-          <button
-            type="button"
-            onClick={scrollToTop}
-            title="Back to top"
-            aria-label="Back to top"
-            className="group flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-neutral-800/90 hover:bg-[#e67e22] text-neutral-300 hover:text-white border border-neutral-700/80 hover:border-[#e67e22] transition-all duration-300 shadow-md active:scale-95"
+          <h2
+            className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight uppercase text-white group-hover:text-neutral-200 transition-colors"
+            style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
           >
-            <span className="text-xs uppercase tracking-wider font-semibold">
-              Top
-            </span>
-            <div className="w-6 h-6 rounded-full bg-neutral-900 group-hover:bg-black/20 flex items-center justify-center transition-colors">
-              <svg
-                className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M5 10l7-7m0 0l7 7m-7-7v18"
-                />
-              </svg>
-            </div>
-          </button>
+            The Grind Chronicle
+          </h2>
+
+          <p className="text-sm sm:text-base text-neutral-400 mt-1.5 italic font-serif tracking-wide">
+            Stories Behind Greatness.
+          </p>
+        </Link>
+
+        {/* Vạch kẻ cam nhỏ điểm nhấn giữa slogan và menu */}
+        <div className="w-12 h-[1.5px] bg-[#e67e22] mb-6"></div>
+
+        {/* 3. CỤM LIÊN KẾT ĐIỀU HƯỚNG CHÍNH */}
+        <nav className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2 mb-5 text-xs sm:text-[13px] font-semibold tracking-wider uppercase text-neutral-300 font-sans">
+          <Link href="/" className="hover:text-[#e67e22] transition-colors">
+            Home
+          </Link>
+          <Link href="/category/nba" className="hover:text-[#e67e22] transition-colors">
+            NBA
+          </Link>
+          <Link href="/category/legends" className="hover:text-[#e67e22] transition-colors">
+            Legends
+          </Link>
+          <Link href="/category/mindset" className="hover:text-[#e67e22] transition-colors">
+            Mindset
+          </Link>
+          <Link href="/contact" className="hover:text-[#e67e22] transition-colors">
+            Contact
+          </Link>
+        </nav>
+
+        {/* 4. CỤM LIÊN KẾT PHÁP LÝ & HỖ TRỢ */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs text-neutral-500 mb-6 font-sans">
+          <Link href="/privacy" className="hover:text-neutral-300 transition-colors">
+            Privacy Policy
+          </Link>
+          <span className="text-neutral-700">•</span>
+          <Link href="/terms" className="hover:text-neutral-300 transition-colors">
+            Terms of Service
+          </Link>
+          <span className="text-neutral-700">•</span>
+          <Link href="/support" className="hover:text-neutral-300 transition-colors">
+            Support
+          </Link>
+          <span className="text-neutral-700">•</span>
+          <a
+            href="https://www.threads.net/@hoop_soul"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-neutral-300 transition-colors"
+          >
+            Threads
+          </a>
         </div>
+
+        {/* 5. COPYRIGHT */}
+        <p className="text-xs text-neutral-600 font-sans">
+          © {currentYear} The Grind Chronicle. All rights reserved.
+        </p>
+
       </div>
     </footer>
   );

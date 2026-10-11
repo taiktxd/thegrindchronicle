@@ -1,14 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import SubscribeModal from './SubscribeModal';
+
+
+
+// Lắng nghe sự kiện lưu email từ SubscribeModal
+function subscribeToAuth(callback: () => void) {
+  window.addEventListener('storage', callback);
+  window.addEventListener('tgc_subscribed', callback);
+  return () => {
+    window.removeEventListener('storage', callback);
+    window.removeEventListener('tgc_subscribed', callback);
+  };
+}
+
+function getSubscriberSnapshot() {
+  return typeof window !== 'undefined' ? localStorage.getItem('tgc_subscriber_email') : null;
+}
+
+function getServerSnapshot() {
+  return null;
+}
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
   const router = useRouter();
+
+  const subscriberEmail = useSyncExternalStore(
+    subscribeToAuth,
+    getSubscriberSnapshot,
+    getServerSnapshot
+  );
+
+  const handleSignOut = () => {
+    localStorage.removeItem('tgc_subscriber_email');
+    window.dispatchEvent(new Event('tgc_subscribed'));
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,96 +65,132 @@ export default function Header() {
   });
 
   return (
-    <header className="w-full bg-[#FBFAF7] text-[#1A1A1A]">
-      {/* ===== Top utility bar ===== */}
-      <div className="w-full bg-[#e67e22] text-[#D9D9D9]">
-        <div className="max-w-6xl mx-auto px-4 h-7 sm:h-8 flex items-center justify-between text-[11px] tracking-wide">
-          <span className="hidden sm:inline">{today}</span>
-          <div className="flex items-center gap-4 ml-auto font-medium">
-            <a
-              href="https://www.threads.net/@hoop_soul"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              Threads
-            </a>
-            <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              Facebook
-            </a>
+    <>
+      <header className="w-full bg-white text-neutral-900 border-b border-neutral-100">
+        {/* 1. TOP BAR */}
+        <div className="w-full border-b border-neutral-100">
+          <div className="max-w-6xl mx-auto px-4 h-8 flex items-center justify-between text-[11px] text-neutral-500">
+            <div className="flex items-center gap-2 font-serif">
+              <span>{today}</span>
+              <span className="text-neutral-300">|</span>
+              <span className="uppercase tracking-wider font-sans text-[10px] text-neutral-400">
+                Rucker Park, NYC
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <a
+                href="https://www.threads.net/@hoop_soul"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-black transition-colors"
+              >
+                Threads
+              </a>
+              <span className="text-neutral-300">/</span>
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-black transition-colors"
+              >
+                Facebook
+              </a>
+
+              <span className="text-neutral-300 mx-1">|</span>
+
+              {/* NÚT EMAIL THAY THẾ CHO NÚT SUBSCRIBE TẠI ĐÂY */}
+              {subscriberEmail ? (
+                <div className="group relative flex items-center">
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 bg-neutral-900 text-white text-[11px] px-3 py-0.5 rounded-full font-medium shadow-sm hover:bg-neutral-800 transition-colors"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span className="max-w-[140px] truncate">{subscriberEmail}</span>
+                    <span className="text-emerald-400 text-xs font-bold">✓</span>
+                  </button>
+
+                  {/* Bấm vào để đổi/thoát email nếu cần */}
+                  <div className="hidden group-hover:block absolute right-0 top-full pt-1 z-30">
+                    <div className="bg-white border border-neutral-200 shadow-lg rounded-lg p-2 min-w-[160px] text-left">
+                      <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-1">
+                        Inner Circle Member
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="text-xs text-rose-600 hover:text-rose-700 font-medium py-1 w-full text-left transition-colors"
+                      >
+                        Switch Email / Exit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsSubscribeOpen(true)}
+                  className="border border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white px-3 py-0.5 rounded-full text-[10.5px] font-semibold uppercase tracking-wider transition-all duration-150"
+                >
+                  SUBSCRIBE
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ===== Masthead: Compact padding to bring content above fold ===== */}
-      <div className="max-w-6xl mx-auto px-4 pt-3.5 sm:pt-4 pb-2.5 sm:pb-3 flex flex-col items-center">
-        <Link href="/" className="flex items-center gap-3 sm:gap-3.5 text-center no-underline text-inherit group">
-          {/* Logo */}
-          <Image
-            src="/logo.png"
-            alt="The Grind Chronicle logo"
-            width={64}
-            height={64}
-            priority
-            className="w-9 h-9 sm:w-11 sm:h-11 object-contain shrink-0 transition-transform duration-200 group-hover:scale-105"
-          />
-
-          {/* Title & Tagline */}
-          <div className="flex flex-col items-center leading-tight">
-            <span
-              className="uppercase font-bold tracking-tight"
+        {/* 2. MASTHEAD */}
+        <div className="max-w-6xl mx-auto px-4 pt-3.5 pb-2 text-center">
+          <Link href="/" className="inline-block group">
+            <h1
+              className="font-bold tracking-tight text-neutral-950 uppercase"
               style={{
                 fontFamily: "Georgia, 'Times New Roman', serif",
-                letterSpacing: '0.01em',
-                fontSize: 'clamp(1.35rem, 4vw, 2.35rem)',
-                color: '#1A1A1A',
+                fontSize: 'clamp(1.75rem, 4.5vw, 2.75rem)',
+                lineHeight: '1.1',
               }}
             >
               The Grind Chronicle
-            </span>
-            <span
-              className="italic mt-0.5"
-              style={{
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                color: '#7A7A7A',
-                fontSize: 'clamp(0.7rem, 2vw, 0.85rem)',
-              }}
+            </h1>
+            <p
+              className="italic text-neutral-500 mt-1 font-serif"
+              style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}
             >
               Stories Behind Greatness.
-            </span>
+            </p>
+          </Link>
+        </div>
+
+        {/* 3. NAVIGATION BAR */}
+        <div className="max-w-6xl mx-auto px-4 h-10 border-t border-neutral-100 grid grid-cols-[auto_1fr_auto] sm:grid-cols-3 items-center">
+          <div className="flex items-center justify-start">
+            <Link href="/" className="shrink-0 flex items-center hover:opacity-80 transition-opacity">
+              <Image
+                src="/logo.png"
+                alt="TGC Logo"
+                width={24}
+                height={24}
+                className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+              />
+            </Link>
           </div>
-        </Link>
-      </div>
 
-      {/* ===== Sticky & Slim Navigation Bar ===== */}
-      <div className="sticky top-0 z-50 w-full bg-[#FBFAF7]/95 backdrop-blur-md border-b-2 border-[#e67e22] shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all">
-        <div className="max-w-6xl mx-auto px-4 h-10 sm:h-11 grid grid-cols-[0_1fr_auto] sm:grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <div aria-hidden className="hidden sm:block" />
-
-          {/* Navigation Links */}
-          <nav className="flex items-center gap-5 sm:gap-6 md:gap-8 overflow-x-auto min-w-0 justify-self-start sm:justify-self-center [&::-webkit-scrollbar]:hidden">
+          <nav className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="relative text-[11px] sm:text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#1A1A1A] py-2 sm:py-2.5 whitespace-nowrap shrink-0 hover:text-amber-600 transition-colors
-                           after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px]
-                           after:bg-amber-600 after:scale-x-0 hover:after:scale-x-100 after:origin-left after:transition-transform"
+                className="text-[12px] sm:text-[13px] font-semibold tracking-wider text-neutral-800 hover:text-black uppercase transition-colors whitespace-nowrap"
               >
                 {item.name}
               </Link>
             ))}
           </nav>
 
-          {/* Search Bar */}
-          <div className="flex items-center shrink-0 justify-self-end">
+          <div className="flex items-center justify-end">
             {searchOpen && (
-              <form onSubmit={handleSearch} className="flex items-center mr-1.5">
+              <form onSubmit={handleSearch} className="mr-2">
                 <input
                   autoFocus
                   type="text"
@@ -129,9 +198,7 @@ export default function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={() => !searchQuery && setSearchOpen(false)}
-                  className="w-28 sm:w-44 md:w-52 border-b border-[#1A1A1A] bg-transparent px-1 py-0.5 text-xs sm:text-sm
-                             text-[#1A1A1A] placeholder:text-[#9A9A9A] focus:outline-none"
-                  style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  className="w-28 sm:w-44 border-b border-neutral-400 bg-transparent px-1 py-0.5 text-xs text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900"
                 />
               </form>
             )}
@@ -142,24 +209,28 @@ export default function Header() {
                   router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                   return;
                 }
-                setSearchOpen((v) => !v);
+                setSearchOpen((prev) => !prev);
               }}
-              title="Search stories"
-              aria-label="Search stories"
-              className="p-1.5 text-[#1A1A1A] hover:text-amber-600 transition-colors"
+              title="Search"
+              className="p-1 text-neutral-700 hover:text-black transition-colors"
             >
-              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2.5"
+                  strokeWidth="2"
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
             </button>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <SubscribeModal
+        isOpen={isSubscribeOpen}
+        onClose={() => setIsSubscribeOpen(false)}
+      />
+    </>
   );
 }

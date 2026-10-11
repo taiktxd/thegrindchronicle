@@ -29,7 +29,7 @@ export default async function Home({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  // 1. Lấy tất cả bài viết từ file JSON/MDX
+  // 1. Lấy tất cả bài viết từ thư mục content/posts
   const allPosts = getAllPosts();
 
   // 2. Xử lý phân trang qua URL query (?page=1, ?page=2)
@@ -44,14 +44,14 @@ export default async function Home({
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-      {/* ===== Single H1 Heading for Brand & Section SEO ===== */}
+      {/* ===== Tiêu đề mục Latest Stories ===== */}
       <section className="mb-6 sm:mb-8 pb-3 border-b border-gray-200/80 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
         <div>
           <h1
             className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-gray-900"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
           >
-            The Grind Chronicle  Latest Stories
+            The Grind Chronicle Latest Stories
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 mt-0.5 italic">
             The untold journeys, mindset, and defining moments of basketball icons.
@@ -71,7 +71,7 @@ export default async function Home({
             className="no-underline text-inherit group"
           >
             <article className="h-full flex flex-col bg-white border border-transparent hover:border-gray-100 rounded-sm transition-all duration-200">
-              {/* Ảnh bìa bài viết — Chuẩn hóa tỷ lệ 16:9 cố định để các card bằng nhau chằn chặn */}
+              {/* Ảnh bìa bài viết chuẩn tỷ lệ 16:9 */}
               {post.coverImage ? (
                 <div className="relative w-full aspect-[16/9] overflow-hidden mb-3.5 rounded-sm bg-neutral-100">
                   <img
@@ -88,13 +88,12 @@ export default async function Home({
                 </div>
               )}
 
-              {/* Cụm thông tin bài viết */}
+              {/* Thông tin bài viết */}
               <div className="flex-1 flex flex-col">
                 <p className="text-amber-600 text-xs font-bold mb-1.5 uppercase tracking-wider">
                   {post.category}
                 </p>
 
-                {/* Heading H2 cho từng bài viết để tuân thủ phân cấp tiêu đề chuẩn SEO */}
                 <h2 className="text-base sm:text-lg font-bold mb-2 leading-snug text-gray-900 group-hover:text-amber-600 transition-colors">
                   {post.title}
                 </h2>
@@ -124,7 +123,7 @@ export default async function Home({
         ))}
       </div>
 
-      {/* Cụm Phân trang — Thẻ Link trang 1 luôn trỏ về "/" gốc để tránh duplicate URL với "?page=1" */}
+      {/* Phân trang */}
       {totalPages > 1 && (
         <nav
           aria-label="Pagination"

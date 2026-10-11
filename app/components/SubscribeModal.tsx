@@ -1,187 +1,144 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 
-interface SubscribeModalProps {
+type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (email: string) => void;
-}
+};
 
-type Status = 'idle' | 'loading' | 'success' | 'already' | 'error';
-
-export default function SubscribeModal({ isOpen, onClose, onSuccess }: SubscribeModalProps) {
+export default function SubscribeModal({ isOpen, onClose }: Props) {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<Status>('idle');
-
-  // Hàm đóng modal và dọn dẹp state sạch sẽ
-  const handleClose = useCallback(() => {
-    setStatus('idle');
-    setEmail('');
-    onClose();
-  }, [onClose]);
-
-  // Đóng modal khi bấm phím ESC (an toàn, không gọi setState trong thân useEffect)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
-    };
-
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, handleClose]);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+
+    const cleanEmail = email.trim().toLowerCase();
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+
+    // 1. Kiểm tra bắt buộc đuôi @gmail.com
+    if (!gmailRegex.test(cleanEmail)) {
+      setStatus('error');
+      setMessage('Please enter a valid Gmail address (@gmail.com).');
+      return;
+    }
 
     setStatus('loading');
-    try {
-      const normalizedEmail = email.trim().toLowerCase();
+    setMessage('');
 
+    try {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: normalizedEmail }),
+        body: JSON.stringify({ email: cleanEmail }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Subscription failed');
-      }
+      if (res.ok) {
+        // 2. LƯU EMAIL VÀO LOCALSTORAGE & KÍCH HOẠT ĐỔI NÚT TRÊN HEADER NGAY LẬP TỨC
+        localStorage.setItem('tgc_subscriber_email', cleanEmail);
+        window.dispatchEvent(new Event('tgc_subscribed'));
 
-      if (data.already) {
-        setStatus('already');
-        onSuccess(normalizedEmail);
-        return;
+        setStatus('success');
+        setMessage(
+          data.message ||
+            'Welcome to the Inner Circle! (Note: Resend is in Sandbox mode, welcome email will be sent automatically once your domain is verified).'
+        );
+      } else {
+        setStatus('error');
+        setMessage(data.error || 'Something went wrong. Please try again.');
       }
-
-      setStatus('success');
-      onSuccess(normalizedEmail);
-    } catch (err) {
-      console.warn('[Subscribe] Error:', err);
+    } catch {
       setStatus('error');
+      setMessage('Network error. Please try again.');
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Lớp nền mờ */}
-      <div
-        onClick={handleClose}
-        className="fixed inset-0 bg-neutral-950/60 backdrop-blur-xs transition-opacity"
-      />
+  const handleClose = () => {
+    setStatus('idle');
+    setMessage('');
+    setEmail('');
+    onClose();
+  };
 
-      {/* Khung Popup */}
-      <div className="relative w-full max-w-md bg-[#fcfbf9] border border-neutral-200 rounded-2xl shadow-2xl p-7 sm:p-8 z-10 animate-in fade-in zoom-in-95 duration-200">
-        {/* Nút đóng (X) */}
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+      <div
+        className="relative w-full max-w-md bg-white rounded-xl shadow-2xl p-6 sm:p-8 border border-neutral-200 text-neutral-900"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Nút X đóng popup */}
         <button
           onClick={handleClose}
-          type="button"
-          aria-label="Close modal"
-          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 transition-colors p-1"
+          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 transition-colors p-1"
+          aria-label="Close"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          ✕
         </button>
 
-        {status === 'success' || status === 'already' ? (
-          <div className="text-center py-4">
-            <span className="w-10 h-10 rounded-full bg-[#e67e22] text-white inline-flex items-center justify-center text-lg font-bold mb-3">
-              ✓
-            </span>
-            <h3
-              className="font-serif text-xl font-bold text-neutral-900 mb-2"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              {status === 'already' ? 'Already in the Circle' : 'Welcome to The Chronicle'}
-            </h3>
-            <p
-              className="text-xs sm:text-sm text-neutral-600 font-serif leading-relaxed mb-6"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              {status === 'already'
-                ? 'Your email is already on our list. The latest stories will keep heading straight to your inbox.'
-                : 'Thank you for joining us. You will receive the latest stories behind the scenes of basketball and NBA legends directly in your inbox.'}
+        <div className="text-center mb-6">
+          <p className="text-xs uppercase font-bold tracking-widest text-[#e67e22] mb-1">
+            The Grind Chronicle
+          </p>
+          <h3
+            className="text-2xl font-bold mb-2 text-neutral-900"
+            style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+          >
+            Join the Inner Circle
+          </h3>
+          <p className="text-sm text-neutral-600">
+            Get exclusive basketball essays, raw human struggles, and deep stories delivered straight to your inbox. No spam.
+          </p>
+        </div>
+
+        {status === 'success' ? (
+          <div className="border border-emerald-200 bg-emerald-50/70 p-5 rounded-lg text-center">
+            <h4 className="text-emerald-800 font-bold text-base mb-2 flex items-center justify-center gap-1.5">
+              <span>✓</span> Welcome to the Inner Circle
+            </h4>
+            <p className="text-xs text-emerald-700 leading-relaxed mb-4">
+              {message}
             </p>
             <button
               type="button"
               onClick={handleClose}
-              className="px-6 py-2 bg-neutral-900 text-white text-xs uppercase tracking-wider font-semibold rounded-lg hover:bg-[#e67e22] transition-colors"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-6 py-2 rounded-md transition-colors uppercase tracking-wider"
             >
-              Close
+              DONE
             </button>
           </div>
         ) : (
-          <div>
-            {/* Header Modal */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#e67e22]" />
-              <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500 font-sans">
-                The Chronicle Dispatch
-              </span>
-            </div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <input
+              type="email"
+              required
+              placeholder="Enter your @gmail.com address…"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-lg border border-neutral-300 bg-white text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#e67e22] focus:border-transparent"
+            />
 
-            <h3
-              className="font-serif text-2xl font-bold text-neutral-950 tracking-tight mb-2"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+            {status === 'error' && (
+              <p className="text-xs text-rose-600 font-medium">{message}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={status === 'loading'}
+              className="w-full py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold rounded-lg text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
             >
-              Stories Behind Greatness.
-            </h3>
+              {status === 'loading' ? 'SUBMITTING…' : 'SUBSCRIBE FREE'}
+            </button>
 
-            <p
-              className="text-xs sm:text-sm text-neutral-600 font-serif leading-relaxed mb-6"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              Subscribe to receive in-depth stories about basketball culture, NBA legends, and the spirit of perseverance directly in your inbox every week.
+            <p className="text-[11px] text-center text-neutral-400 mt-1">
+              Active @gmail.com required. Unsubscribe anytime with one click.
             </p>
-
-            {/* Form nhập Email */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1.5 font-sans">
-                  Email Address
-                </label>
-                <input
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                  className="w-full px-4 py-2.5 text-xs sm:text-sm text-neutral-900 bg-white border border-neutral-300 rounded-lg placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all"
-                />
-              </div>
-
-              {status === 'error' && (
-                <p className="text-xs text-red-600">
-                  Unable to subscribe at this time. Please check your email address!
-                </p>
-              )}
-
-              <button
-                type="submit"
-                disabled={status === 'loading'}
-                className="w-full py-2.5 bg-neutral-950 text-white text-xs uppercase tracking-widest font-semibold rounded-lg hover:bg-[#e67e22] active:scale-[0.98] transition-all disabled:opacity-60"
-              >
-                {status === 'loading' ? 'Joining…' : 'Join The Newsletter →'}
-              </button>
-            </form>
-
-            <p className="text-[11px] text-neutral-400 text-center font-serif italic mt-4">
-              No spam. Unsubscribe anytime with one click.
-            </p>
-          </div>
+          </form>
         )}
       </div>
     </div>
