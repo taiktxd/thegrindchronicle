@@ -38,7 +38,8 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
-        <Analytics />
+        {/* Thêm debug={false} để tắt sạch log trong Console */}
+        <Analytics debug={false} />
         
         {/* Google Analytics 4 */}
         <GoogleAnalytics gaId="G-G6Y8EP13JN" />

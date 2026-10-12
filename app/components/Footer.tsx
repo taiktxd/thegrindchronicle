@@ -8,7 +8,15 @@ export default function Footer() {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
 
-  // BẢO MẬT: ẨN HOÀN TOÀN FOOTER KHI Ở KHU VỰC QUẢN TRỊ ADMIN
+  // Hàm cuộn mượt mà lên đầu trang
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  // ẨN HOÀN TOÀN FOOTER KHI Ở TRANG ADMIN
   if (pathname.startsWith('/admin')) {
     return null;
   }
@@ -18,9 +26,9 @@ export default function Footer() {
       {/* 1. THANH CHỈ CAM MẢNH TINH TẾ (2px sắc nét) */}
       <div className="w-full h-[2px] bg-[#e67e22]"></div>
 
-      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-12 flex flex-col items-center text-center">
+      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10 flex flex-col items-center text-center">
         
-        {/* 2. KHỐI THƯƠNG HIỆU */}
+        {/* 2. KHỐI THƯƠNG HIỆU (Đã kéo sát lên trên, không còn bị đẩy khoảng hở) */}
         <Link href="/" className="inline-flex flex-col items-center group mb-5">
           <div className="mb-3 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-200">
             <Image
@@ -90,10 +98,23 @@ export default function Footer() {
           </a>
         </div>
 
-        {/* 5. COPYRIGHT */}
-        <p className="text-xs text-neutral-600 font-sans">
-          © {currentYear} The Grind Chronicle. All rights reserved.
-        </p>
+        {/* 5. HÀNG ĐÁY: DÒNG COPYRIGHT BÊN TRÁI & NÚT BACK TO TOP Ở BÊN PHẢI */}
+        <div className="w-full pt-4 border-t border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 font-sans">
+          <p className="text-neutral-600">
+            © {currentYear} The Grind Chronicle. All rights reserved.
+          </p>
+
+          <button
+            type="button"
+            onClick={scrollToTop}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-800 bg-neutral-900/90 text-neutral-400 hover:text-white hover:border-[#e67e22] text-[11px] font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer group shadow-2xs"
+          >
+            <span>Back to top</span>
+            <span className="text-[#e67e22] group-hover:-translate-y-0.5 transition-transform duration-200 font-bold">
+              ↑
+            </span>
+          </button>
+        </div>
 
       </div>
     </footer>

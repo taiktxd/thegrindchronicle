@@ -1,120 +1,184 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
+import SubscribeModal from './SubscribeModal';
 
-type Props = {
+interface PostActionsProps {
   slug: string;
   title: string;
-};
+}
 
-export default function PostActions({ slug, title }: Props) {
-  const [isSaved, setIsSaved] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+// 1. Đăng ký theo dõi thay đổi localStorage chuẩn React (Không cần useEffect)
+function subscribeToSavedPosts(callback: () => void) {
+  window.addEventListener('storage', callback);
+  window.addEventListener('tgc_saved_posts_updated', callback);
+  return () => {
+    window.removeEventListener('storage', callback);
+    window.removeEventListener('tgc_saved_posts_updated', callback);
+  };
+}
 
-  // Lấy email thành viên hiện tại
-  const userEmail = typeof window !== 'undefined' ? localStorage.getItem('tgc_subscriber_email') : null;
+function getSavedSnapshot() {
+  return typeof window !== 'undefined'
+    ? localStorage.getItem('tgc_saved_posts') || '[]'
+    : '[]';
+}
 
-  // 1. Khi mở bài viết: Hỏi Supabase xem email này đã lưu bài này chưa (không dùng localStorage)
-  useEffect(() => {
-    if (!userEmail) return;
+function getServerSnapshot() {
+  return '[]';
+}
 
-    async function checkSavedStatus() {
-      try {
-        const res = await fetch(`/api/saved-posts?email=${encodeURIComponent(userEmail!)}&slug=${encodeURIComponent(slug)}`);
-        const data = await res.json();
-        setIsSaved(!!data.isSaved);
-      } catch {
-        setIsSaved(false);
-      }
+export default function PostActions({ slug, title }: PostActionsProps) {
+  const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // 2. Đọc trực tiếp danh sách bài đã lưu không gây cascading render
+  const savedPostsJson = useSyncExternalStore(
+    subscribeToSavedPosts,
+    getSavedSnapshot,
+    getServerSnapshot
+  );
+
+  // Kiểm tra bài viết hiện tại đã được lưu hay chưa
+  const isSaved = (() => {
+    try {
+      const list = JSON.parse(savedPostsJson);
+      return Array.isArray(list) && list.includes(slug);
+    } catch {
+      return false;
     }
+  })();
 
-    checkSavedStatus();
-  }, [userEmail, slug]);
+  // 3. Hàm kích hoạt Floating Toast tự tan sau 3 giây
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage((current) => (current === msg ? null : current));
+    }, 3000);
+  };
 
-  // 2. Thao tác Lưu / Hủy lưu trực tiếp vào cơ sở dữ liệu Supabase
-  const handleToggleSave = async () => {
-    if (!userEmail) {
-      alert('Please join the Inner Circle (Subscribe) first to save this story to your account.');
+  // 4. Xử lý Lưu bài viết (Không dùng alert thời cũ)
+  const handleSave = () => {
+    const subscriber =
+      localStorage.getItem('tgc_subscriber_email') ||
+      localStorage.getItem('subscriber_email');
+
+    // Chưa đăng nhập / subscribe: Mở hộp thoại Inner Circle
+    if (!subscriber) {
+      setIsSubscribeOpen(true);
       return;
     }
 
-    setLoading(true);
     try {
-      const res = await fetch('/api/saved-posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: userEmail,
-          slug,
-          title,
-        }),
-      });
+      const saved = localStorage.getItem('tgc_saved_posts');
+      let postsArray: string[] = saved ? JSON.parse(saved) : [];
 
-      const data = await res.json();
-      if (res.ok) {
-        setIsSaved(data.isSaved);
+      if (postsArray.includes(slug)) {
+        postsArray = postsArray.filter((s) => s !== slug);
+        showToast('Story removed from your reading list.');
       } else {
-        alert(data.error || 'Failed to update saved story.');
+        postsArray.push(slug);
+        showToast('Story saved to your reading list!');
       }
+
+      localStorage.setItem('tgc_saved_posts', JSON.stringify(postsArray));
+      window.dispatchEvent(new Event('tgc_saved_posts_updated'));
     } catch {
-      alert('Network error. Please try again.');
-    } finally {
-      setLoading(false);
+      showToast('Could not update saved stories.');
     }
   };
 
-  // Chia sẻ link
+  // 5. Xử lý Chia sẻ (Share) bài viết
   const handleShare = async () => {
-    const url = window.location.href;
-    if (navigator.clipboard) {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          url,
+        });
+        return;
+      } catch (err: unknown) {
+        if ((err as Error)?.name === 'AbortError') return;
+      }
+    }
+
+    try {
       await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      showToast('Link copied to clipboard!');
+    } catch {
+      showToast('Unable to copy link.');
     }
   };
 
   return (
-    <div className="flex items-center gap-3">
-      {/* Nút Save/Bookmark liên kết Supabase */}
-      <button
-        type="button"
-        onClick={handleToggleSave}
-        disabled={loading}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-          isSaved
-            ? 'bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800'
-            : 'bg-white text-neutral-700 border-neutral-200 hover:border-neutral-900 hover:text-black'
-        }`}
-        title={isSaved ? 'Remove from saved' : 'Save story'}
-      >
-        <svg
-          className="w-3.5 h-3.5"
-          fill={isSaved ? 'currentColor' : 'none'}
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
+    <>
+      <div className="flex items-center gap-2">
+        {/* NÚT SAVE STORY */}
+        <button
+          type="button"
+          onClick={handleSave}
+          className={`px-3 sm:px-4 py-2 border rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-2xs ${
+            isSaved
+              ? 'bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800'
+              : 'bg-white text-neutral-700 border-neutral-200 hover:border-neutral-900 hover:text-neutral-950'
+          }`}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-          />
-        </svg>
-        <span>{loading ? 'Updating…' : isSaved ? 'Saved in Account' : 'Save Story'}</span>
-      </button>
+          <svg
+            className={`w-3.5 h-3.5 ${
+              isSaved ? 'fill-current text-[#e67e22]' : 'text-neutral-500'
+            }`}
+            fill={isSaved ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+            />
+          </svg>
+          <span>{isSaved ? 'Saved' : 'Save Story'}</span>
+        </button>
 
-      {/* Nút Share */}
-      <button
-        type="button"
-        onClick={handleShare}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-neutral-50 hover:bg-neutral-100 text-neutral-700 border border-neutral-200 transition-colors"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-        </svg>
-        <span>{copied ? 'Copied Link!' : 'Share'}</span>
-      </button>
-    </div>
+        {/* NÚT SHARE */}
+        <button
+          type="button"
+          onClick={handleShare}
+          className="px-3 sm:px-4 py-2 border border-neutral-200 bg-white rounded-lg text-xs font-semibold text-neutral-700 hover:border-neutral-900 hover:text-neutral-950 transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
+        >
+          <svg
+            className="w-3.5 h-3.5 text-neutral-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+            />
+          </svg>
+          <span>Share</span>
+        </button>
+      </div>
+
+      {/* MODAL INNER CIRCLE */}
+      <SubscribeModal
+        isOpen={isSubscribeOpen}
+        onClose={() => setIsSubscribeOpen(false)}
+      />
+
+      {/* FLOATING TOAST THÔNG BÁO TỰ BIẾN MẤT */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-50 bg-neutral-950 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl border border-neutral-800 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200 whitespace-nowrap">
+          <span className="w-2 h-2 rounded-full bg-[#e67e22] shrink-0"></span>
+          <span className="font-medium font-sans">{toastMessage}</span>
+        </div>
+      )}
+    </>
   );
 }
