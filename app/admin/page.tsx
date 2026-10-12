@@ -18,7 +18,10 @@ interface SubscriberItem {
   created_at: string;
 }
 
+const AUTHORIZED_ADMIN_EMAIL = 'thegrindchronicle.contact@gmail.com';
+
 export default function AdminPage() {
+  const [adminEmail, setAdminEmail] = useState('');
   const [passcode, setPasscode] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -30,25 +33,38 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // State cho tính năng Reply bình luận
+  const [replyingToId, setReplyingToId] = useState<number | string | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [replySending, setReplySending] = useState(false);
+
   // Phân trang 6 bình luận / trang
   const [currentPage, setCurrentPage] = useState(1);
   const COMMENTS_PER_PAGE = 6;
 
-  // 1. Khôi phục phiên đăng nhập từ sessionStorage
+  // 1. Khôi phục phiên làm việc từ sessionStorage
   useEffect(() => {
     const savedCode = sessionStorage.getItem('tgc_admin_passcode');
-    if (!savedCode) return;
+    const savedEmail = sessionStorage.getItem('tgc_admin_email');
+
+    if (!savedCode || !savedEmail || savedEmail.toLowerCase() !== AUTHORIZED_ADMIN_EMAIL.toLowerCase()) {
+      return;
+    }
 
     let isMounted = true;
 
-    async function restoreSession(code: string) {
+    async function restoreSession(code: string, email: string) {
       try {
         const res = await fetch('/api/admin/comments', {
-          headers: { 'x-admin-passcode': code },
+          headers: {
+            'x-admin-passcode': code,
+            'x-admin-email': email,
+          },
         });
 
         if (!res.ok) {
           sessionStorage.removeItem('tgc_admin_passcode');
+          sessionStorage.removeItem('tgc_admin_email');
           return;
         }
 
@@ -57,10 +73,14 @@ export default function AdminPage() {
 
         setComments(commentData);
         setIsAuthenticated(true);
+        setAdminEmail(email);
         setPasscode(code);
 
         const subRes = await fetch('/api/admin/subscribers', {
-          headers: { 'x-admin-passcode': code },
+          headers: {
+            'x-admin-passcode': code,
+            'x-admin-email': email,
+          },
         });
         if (subRes.ok && isMounted) {
           const subData = await subRes.json();
@@ -69,11 +89,12 @@ export default function AdminPage() {
       } catch {
         if (isMounted) {
           sessionStorage.removeItem('tgc_admin_passcode');
+          sessionStorage.removeItem('tgc_admin_email');
         }
       }
     }
 
-    void restoreSession(savedCode);
+    void restoreSession(savedCode, savedEmail);
 
     return () => {
       isMounted = false;
@@ -83,14 +104,28 @@ export default function AdminPage() {
   // 2. Mở khóa Admin
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailInput = adminEmail.trim().toLowerCase();
     const code = passcode.trim();
-    if (!code) return;
+
+    setAuthError('');
+
+    if (emailInput !== AUTHORIZED_ADMIN_EMAIL.toLowerCase()) {
+      setAuthError(`Access Denied: Only ${AUTHORIZED_ADMIN_EMAIL} is authorized.`);
+      return;
+    }
+
+    if (!code) {
+      setAuthError('Please enter the Admin Passcode.');
+      return;
+    }
 
     setLoading(true);
-    setAuthError('');
     try {
       const res = await fetch('/api/admin/comments', {
-        headers: { 'x-admin-passcode': code },
+        headers: {
+          'x-admin-passcode': code,
+          'x-admin-email': emailInput,
+        },
       });
 
       if (!res.ok) {
@@ -100,10 +135,15 @@ export default function AdminPage() {
       const commentData = await res.json();
       setComments(commentData);
       setIsAuthenticated(true);
+
+      sessionStorage.setItem('tgc_admin_email', emailInput);
       sessionStorage.setItem('tgc_admin_passcode', code);
 
       const subRes = await fetch('/api/admin/subscribers', {
-        headers: { 'x-admin-passcode': code },
+        headers: {
+          'x-admin-passcode': code,
+          'x-admin-email': emailInput,
+        },
       });
       if (subRes.ok) {
         const subData = await subRes.json();
@@ -117,19 +157,25 @@ export default function AdminPage() {
     }
   };
 
-  const handleLogout = () => {
+  // 3. Đăng xuất an toàn khỏi Admin
+  const handleAdminLogout = () => {
     sessionStorage.removeItem('tgc_admin_passcode');
+    sessionStorage.removeItem('tgc_admin_email');
     setIsAuthenticated(false);
+    setAdminEmail('');
     setPasscode('');
+    setComments([]);
+    setSubscribers([]);
   };
 
-  // 3. Đổi bộ lọc (tự động quay về trang 1)
+  // 4. Đổi bộ lọc bình luận
   const handleFilterChange = (filter: 'all' | 'pending' | 'approved') => {
     setCommentFilter(filter);
     setCurrentPage(1);
+    setReplyingToId(null);
   };
 
-  // 4. Duyệt / Ẩn bình luận
+  // 5. Duyệt / Ẩn bình luận
   const handleToggleApprove = async (id: number | string, currentStatus: boolean) => {
     try {
       const res = await fetch('/api/admin/comments', {
@@ -137,6 +183,7 @@ export default function AdminPage() {
         headers: {
           'Content-Type': 'application/json',
           'x-admin-passcode': passcode,
+          'x-admin-email': adminEmail,
         },
         body: JSON.stringify({ id, approved: !currentStatus }),
       });
@@ -150,13 +197,16 @@ export default function AdminPage() {
     }
   };
 
-  // 5. Xóa bình luận
+  // 6. Xóa bình luận
   const handleDeleteComment = async (id: number | string) => {
     if (!confirm('Are you sure you want to permanently delete this comment?')) return;
     try {
       const res = await fetch(`/api/admin/comments?id=${id}`, {
         method: 'DELETE',
-        headers: { 'x-admin-passcode': passcode },
+        headers: {
+          'x-admin-passcode': passcode,
+          'x-admin-email': adminEmail,
+        },
       });
       if (res.ok) {
         setComments((prev) => prev.filter((c) => c.id !== id));
@@ -166,13 +216,58 @@ export default function AdminPage() {
     }
   };
 
-  // 6. Xóa subscriber
+  // 7. GỬI BÌNH LUẬN TRẢ LỜI CỦA ADMIN (Rep)
+  const handleSendReply = async (originalComment: CommentItem) => {
+    if (!replyText.trim()) return;
+
+    setReplySending(true);
+    try {
+      const replyPayload = {
+        postSlug: originalComment.post_slug,
+        name: 'The Grind Chronicle',
+        message: `@${originalComment.name} ${replyText.trim()}`,
+      };
+
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(replyPayload),
+      });
+
+      if (!res.ok) throw new Error('Failed to send reply');
+
+      // Tự động tải lại danh sách bình luận mới nhất
+      const refreshRes = await fetch('/api/admin/comments', {
+        headers: {
+          'x-admin-passcode': passcode,
+          'x-admin-email': adminEmail,
+        },
+      });
+      if (refreshRes.ok) {
+        const freshComments = await refreshRes.json();
+        setComments(freshComments);
+      }
+
+      setReplyingToId(null);
+      setReplyText('');
+    } catch (err) {
+      console.error('Error posting reply:', err);
+      alert('Could not post reply. Please check connection and try again.');
+    } finally {
+      setReplySending(false);
+    }
+  };
+
+  // 8. Xóa subscriber
   const handleDeleteSubscriber = async (id: number | string) => {
     if (!confirm('Remove this email from subscribers list?')) return;
     try {
       const res = await fetch(`/api/admin/subscribers?id=${id}`, {
         method: 'DELETE',
-        headers: { 'x-admin-passcode': passcode },
+        headers: {
+          'x-admin-passcode': passcode,
+          'x-admin-email': adminEmail,
+        },
       });
       if (res.ok) {
         setSubscribers((prev) => prev.filter((s) => s.id !== id));
@@ -182,7 +277,7 @@ export default function AdminPage() {
     }
   };
 
-  // 7. Copy toàn bộ email
+  // 9. Copy toàn bộ email
   const handleCopyEmails = () => {
     const emailList = subscribers.map((s) => s.email).join(', ');
     navigator.clipboard.writeText(emailList);
@@ -206,23 +301,47 @@ export default function AdminPage() {
             The Grind Chronicle Admin
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="password"
-              value={passcode}
-              onChange={(e) => setPasscode(e.target.value)}
-              placeholder="Enter Admin Passcode"
-              className="w-full px-4 py-2.5 text-center text-sm bg-neutral-50 border border-neutral-200 rounded-lg tracking-widest placeholder:tracking-normal placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all"
-            />
+          <form onSubmit={handleLogin} className="space-y-3 text-left">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1 ml-1">
+                Admin Email
+              </label>
+              <input
+                type="email"
+                required
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                placeholder="thegrindchronicle.contact@gmail.com"
+                className="w-full px-3.5 py-2 text-xs sm:text-sm bg-neutral-50 border border-neutral-200 rounded-lg placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all font-sans"
+              />
+            </div>
 
-            {authError && <p className="text-xs text-red-600 font-medium">{authError}</p>}
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1 ml-1">
+                Passcode
+              </label>
+              <input
+                type="password"
+                required
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="Enter Admin Passcode"
+                className="w-full px-3.5 py-2 text-xs sm:text-sm bg-neutral-50 border border-neutral-200 rounded-lg tracking-widest placeholder:tracking-normal placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all"
+              />
+            </div>
+
+            {authError && (
+              <p className="text-[11px] text-red-600 font-medium pt-1 text-center">
+                {authError}
+              </p>
+            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-neutral-950 hover:bg-[#e67e22] text-white text-xs uppercase tracking-widest font-semibold rounded-lg transition-colors disabled:opacity-50"
+              className="w-full mt-2 py-2.5 bg-neutral-950 hover:bg-[#e67e22] text-white text-xs uppercase tracking-widest font-semibold rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
             >
-              {loading ? 'Verifying…' : 'Unlock Desk →'}
+              {loading ? 'Verifying Desk…' : 'Unlock Desk →'}
             </button>
           </form>
 
@@ -230,14 +349,14 @@ export default function AdminPage() {
             href="/"
             className="inline-block mt-6 text-xs text-neutral-400 hover:text-neutral-900 transition-colors"
           >
-            ← Back to Public Stories
+            ← Return to Public Website
           </Link>
         </div>
       </div>
     );
   }
 
-  // ================= TÍNH TOÁN DỮ LIỆU & PHÂN TRANG =================
+  // ================= BẢNG ĐIỀU KHIỂN =================
   const pendingCommentsCount = comments.filter((c) => !c.approved).length;
   const filteredComments = comments.filter((c) => {
     if (commentFilter === 'pending') return !c.approved;
@@ -250,36 +369,47 @@ export default function AdminPage() {
   const paginatedComments = filteredComments.slice(startIndex, startIndex + COMMENTS_PER_PAGE);
 
   return (
-    <div className="min-h-screen bg-[#fcfbf9] text-neutral-900 font-sans pb-16">
-      {/* Top Header */}
-      <header className="border-b border-neutral-200 bg-white sticky top-0 z-20">
+    <div className="bg-[#fcfbf9] text-neutral-900 font-sans pb-8 min-h-screen">
+      
+      {/* HEADER ADMIN */}
+      <header className="border-b border-neutral-200 bg-white sticky top-0 z-30 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="font-serif font-black uppercase text-sm sm:text-base tracking-tight hover:opacity-80 transition-opacity"
+            <span
+              className="font-serif font-black uppercase text-sm sm:text-base tracking-tight text-neutral-950"
               style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
             >
               The Grind Chronicle
-            </Link>
+            </span>
             <span className="text-neutral-300">/</span>
-            <span className="text-[11px] uppercase tracking-widest font-bold text-neutral-500">
+            <span className="text-[11px] uppercase tracking-widest font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
               Editorial Desk
             </span>
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-neutral-100 rounded-full border border-neutral-200 text-xs text-neutral-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span className="font-medium font-mono text-[11px]">{adminEmail}</span>
+            </div>
+
             <Link
               href="/"
-              className="text-xs text-neutral-500 hover:text-neutral-900 transition-colors hidden sm:inline-block"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-neutral-500 hover:text-neutral-900 transition-colors px-2 py-1 rounded-md hover:bg-neutral-100 hidden md:inline-block"
             >
               View Site ↗
             </Link>
+
             <button
-              onClick={handleLogout}
-              className="text-xs text-neutral-600 hover:text-red-600 border border-neutral-200 hover:border-red-300 px-3 py-1 rounded-md transition-colors"
+              onClick={handleAdminLogout}
+              className="text-xs font-semibold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 hover:border-rose-600 px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5"
             >
-              Lock Desk
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout Admin
             </button>
           </div>
         </div>
@@ -319,7 +449,7 @@ export default function AdminPage() {
             <button
               onClick={handleCopyEmails}
               disabled={subscribers.length === 0}
-              className="text-xs font-medium py-2 px-3 border border-neutral-300 hover:border-neutral-900 rounded-lg text-neutral-800 transition-colors text-center disabled:opacity-40"
+              className="text-xs font-medium py-2 px-3 border border-neutral-300 hover:border-neutral-900 rounded-lg text-neutral-800 transition-colors text-center disabled:opacity-40 cursor-pointer"
             >
               {copied ? '✓ Copied to Clipboard!' : '📋 Copy All Subscriber Emails'}
             </button>
@@ -330,7 +460,7 @@ export default function AdminPage() {
         <div className="flex border-b border-neutral-200 mb-6 gap-6">
           <button
             onClick={() => setActiveTab('comments')}
-            className={`pb-3 text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors relative ${
+            className={`pb-3 text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors relative cursor-pointer ${
               activeTab === 'comments'
                 ? 'text-neutral-950 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#e67e22]'
                 : 'text-neutral-400 hover:text-neutral-700'
@@ -340,7 +470,7 @@ export default function AdminPage() {
           </button>
           <button
             onClick={() => setActiveTab('subscribers')}
-            className={`pb-3 text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors relative ${
+            className={`pb-3 text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors relative cursor-pointer ${
               activeTab === 'subscribers'
                 ? 'text-neutral-950 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#e67e22]'
                 : 'text-neutral-400 hover:text-neutral-700'
@@ -350,10 +480,9 @@ export default function AdminPage() {
           </button>
         </div>
 
-        {/* ================= TAB 1: COMMENTS ================= */}
+        {/* TAB 1: COMMENTS */}
         {activeTab === 'comments' && (
           <div>
-            {/* Filter Pill */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-neutral-400 font-medium">Filter:</span>
@@ -361,7 +490,7 @@ export default function AdminPage() {
                   <button
                     key={filter}
                     onClick={() => handleFilterChange(filter)}
-                    className={`text-xs px-3 py-1 rounded-full uppercase tracking-wider font-medium transition-colors ${
+                    className={`text-xs px-3 py-1 rounded-full uppercase tracking-wider font-medium transition-colors cursor-pointer ${
                       commentFilter === filter
                         ? 'bg-neutral-900 text-white'
                         : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
@@ -386,67 +515,132 @@ export default function AdminPage() {
             ) : (
               <div className="bg-white border border-neutral-200 rounded-xl divide-y divide-neutral-100 overflow-hidden shadow-2xs">
                 {paginatedComments.map((c) => (
-                  <div key={c.id} className="py-3 px-4 sm:px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="space-y-1 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-xs text-neutral-900">{c.name}</span>
-                        <span className="text-neutral-300">•</span>
-                        <span className="text-[11px] text-neutral-400">
-                          {new Date(c.created_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                        <span className="text-neutral-300">•</span>
-                        <Link
-                          href={`/post/${c.post_slug}`}
-                          target="_blank"
-                          className="text-[11px] text-[#e67e22] hover:underline truncate max-w-[200px]"
+                  <div key={c.id} className="py-3.5 px-4 sm:px-5 flex flex-col gap-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-bold text-xs text-neutral-900">{c.name}</span>
+                          <span className="text-neutral-300">•</span>
+                          <span className="text-[11px] text-neutral-400">
+                            {new Date(c.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                          <span className="text-neutral-300">•</span>
+                          <Link
+                            href={`/post/${c.post_slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] text-[#e67e22] hover:underline truncate max-w-[200px]"
+                          >
+                            /{c.post_slug} ↗
+                          </Link>
+                        </div>
+
+                        <p
+                          className="text-xs text-neutral-800 font-serif leading-relaxed"
+                          style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                         >
-                          /{c.post_slug} ↗
-                        </Link>
+                          {c.message}
+                        </p>
                       </div>
 
-                      <p
-                        className="text-xs text-neutral-800 font-serif line-clamp-2 leading-relaxed"
-                        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                      >
-                        {c.message}
-                      </p>
+                      {/* HÀNG NÚT THAO TÁC: ĐÃ BỔ SUNG NÚT "Rep" */}
+                      <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (replyingToId === c.id) {
+                              setReplyingToId(null);
+                              setReplyText('');
+                            } else {
+                              setReplyingToId(c.id);
+                              setReplyText('');
+                            }
+                          }}
+                          className={`text-xs px-2.5 py-1 rounded-md font-medium border transition-colors cursor-pointer ${
+                            replyingToId === c.id
+                              ? 'bg-amber-100 border-amber-300 text-amber-900'
+                              : 'bg-white border-neutral-200 text-neutral-700 hover:border-amber-500 hover:text-amber-600'
+                          }`}
+                        >
+                          💬 Rep
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleToggleApprove(c.id, c.approved)}
+                          className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                            c.approved
+                              ? 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                              : 'bg-green-600 text-white hover:bg-green-700'
+                          }`}
+                        >
+                          {c.approved ? 'Hide' : 'Approve'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteComment(c.id)}
+                          className="text-xs px-2.5 py-1 rounded-md text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Action buttons thu gọn */}
-                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                      <button
-                        onClick={() => handleToggleApprove(c.id, c.approved)}
-                        className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors ${
-                          c.approved
-                            ? 'bg-neutral-100 text-neutral-700 hover:bg-amber-100 hover:text-amber-800'
-                            : 'bg-green-600 text-white hover:bg-green-700'
-                        }`}
-                      >
-                        {c.approved ? 'Hide' : 'Approve'}
-                      </button>
-                      <button
-                        onClick={() => handleDeleteComment(c.id)}
-                        className="text-xs px-2.5 py-1 rounded-md text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    {/* KHUNG SOẠN THẢO TRẢ LỜI (MỞ RA KHI BẤM NÚT "Rep") */}
+                    {replyingToId === c.id && (
+                      <div className="mt-2 p-3 bg-neutral-50 border border-neutral-200 rounded-lg animate-in fade-in duration-150">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[11px] font-semibold text-neutral-600">
+                            Replying to <strong className="text-neutral-900">@{c.name}</strong> as{' '}
+                            <span className="text-[#e67e22] font-serif">The Grind Chronicle</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setReplyingToId(null)}
+                            className="text-[11px] text-neutral-400 hover:text-neutral-700 cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+
+                        <textarea
+                          rows={2}
+                          autoFocus
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder={`Type your reply to ${c.name}…`}
+                          className="w-full text-xs p-2.5 bg-white border border-neutral-200 rounded-md focus:outline-none focus:border-amber-600 transition-all font-sans resize-none"
+                        />
+
+                        <div className="flex justify-end mt-2">
+                          <button
+                            type="button"
+                            disabled={replySending || !replyText.trim()}
+                            onClick={() => handleSendReply(c)}
+                            className="px-4 py-1.5 bg-[#e67e22] hover:bg-[#d35400] text-white text-xs font-semibold rounded-md transition-colors disabled:opacity-50 cursor-pointer"
+                          >
+                            {replySending ? 'Posting Reply…' : 'Send Reply ↵'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
 
-                {/* BỘ PHÂN TRANG (PAGINATION) */}
+                {/* BỘ PHÂN TRANG */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-1.5 py-3 px-4 bg-neutral-50/50 font-sans border-t border-neutral-100">
                     <button
                       type="button"
                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
-                      className="px-2.5 py-1 text-xs border border-neutral-200 rounded text-neutral-600 hover:border-neutral-900 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                      className="px-2.5 py-1 text-xs border border-neutral-200 rounded text-neutral-600 hover:border-neutral-900 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                     >
                       Previous
                     </button>
@@ -459,7 +653,7 @@ export default function AdminPage() {
                           key={pageNum}
                           type="button"
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`px-2.5 py-1 text-xs border rounded transition-colors ${
+                          className={`px-2.5 py-1 text-xs border rounded transition-colors cursor-pointer ${
                             isActive
                               ? 'border-neutral-950 bg-neutral-950 text-white font-medium'
                               : 'border-neutral-200 text-neutral-700 hover:border-neutral-900 bg-white'
@@ -474,7 +668,7 @@ export default function AdminPage() {
                       type="button"
                       onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages}
-                      className="px-2.5 py-1 text-xs border border-neutral-200 rounded text-neutral-600 hover:border-neutral-900 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                      className="px-2.5 py-1 text-xs border border-neutral-200 rounded text-neutral-600 hover:border-neutral-900 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                     >
                       Next
                     </button>
@@ -485,7 +679,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ================= TAB 2: SUBSCRIBERS ================= */}
+        {/* TAB 2: SUBSCRIBERS */}
         {activeTab === 'subscribers' && (
           <div>
             {subscribers.length === 0 ? (
@@ -517,7 +711,7 @@ export default function AdminPage() {
 
                     <button
                       onClick={() => handleDeleteSubscriber(s.id)}
-                      className="text-xs text-neutral-400 hover:text-red-600 p-1 transition-colors"
+                      className="text-xs text-neutral-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
                       title="Remove subscriber"
                     >
                       Remove

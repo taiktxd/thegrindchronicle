@@ -1,12 +1,40 @@
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/posts';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 
 type Props = {
   params: Promise<{ slug: string }> | { slug: string };
+  searchParams?: Promise<{ page?: string }> | { page?: string };
 };
 
-export default async function CategoryPage({ params }: Props) {
+// 1. METADATA CHUẨN SEO CHO TỪNG TRANG DANH MỤC & PHÂN TRANG
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const resolvedParams = await Promise.resolve(params);
+  const categorySlug = (resolvedParams?.slug || '').toLowerCase();
+  
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const currentPage = Number(resolvedSearchParams?.page) || 1;
+
+  const categoryTitles: Record<string, string> = {
+    nba: 'NBA Stories',
+    legends: 'Legends Archive',
+    mindset: 'Mindset & Perseverance',
+  };
+
+  const title = categoryTitles[categorySlug] || categorySlug.toUpperCase();
+  const pageSuffix = currentPage > 1 ? ` (Page ${currentPage})` : '';
+
+  return {
+    title: `${title}${pageSuffix} | The Grind Chronicle`,
+    description: `Stories, raw journeys, and deep perspectives filed under ${title}.`,
+    alternates: {
+      canonical: currentPage > 1 ? `/category/${categorySlug}?page=${currentPage}` : `/category/${categorySlug}`,
+    },
+  };
+}
+
+export default async function CategoryPage({ params, searchParams }: Props) {
   const resolvedParams = await Promise.resolve(params);
   const categorySlug = (resolvedParams?.slug || '').toLowerCase();
 
@@ -32,7 +60,8 @@ export default async function CategoryPage({ params }: Props) {
   const currentMeta = categoryMeta[categorySlug];
   const allPosts = getAllPosts();
 
-  const posts = allPosts.filter((post) => {
+  // 2. LỌC BÀI THEO DANH MỤC
+  const filteredPosts = allPosts.filter((post) => {
     const postCategory = post.category?.toLowerCase() || '';
     const postTags = Array.isArray(post.tags)
       ? post.tags.map((t: string) => t.toLowerCase())
@@ -58,9 +87,19 @@ export default async function CategoryPage({ params }: Props) {
     return postCategory === categorySlug || postTags.includes(categorySlug);
   });
 
+  // 3. XỬ LÝ PHÂN TRANG (CHUẨN 6 BÀI MỖI TRANG NHƯ HOME)
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const currentPage = Number(resolvedSearchParams?.page) || 1;
+  const postsPerPage = 6;
+
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-      {/* ===== Tiêu đề mục Category: Cùng style chuẩn với Latest Stories ở Home ===== */}
+      {/* ===== Header Category đồng bộ với Trang chủ ===== */}
       <section className="mb-6 sm:mb-8 pb-3 border-b border-gray-200/80 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -90,17 +129,17 @@ export default async function CategoryPage({ params }: Props) {
         </span>
       </section>
 
-      {/* ===== Grid danh sách bài viết — Sao chép y hệt 100% cấu trúc của Home ===== */}
-      {posts.length > 0 ? (
+      {/* ===== Lưới bài viết: Tối đa 6 bài/trang ===== */}
+      {currentPosts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-8">
-          {posts.map((post) => (
+          {currentPosts.map((post) => (
             <Link
               key={post.slug}
               href={`/post/${post.slug}`}
               className="no-underline text-inherit group"
             >
               <article className="h-full flex flex-col bg-white border border-transparent hover:border-gray-100 rounded-sm transition-all duration-200">
-                {/* Ảnh bìa bài viết chuẩn tỷ lệ 16:9 */}
+                {/* Ảnh bìa bài viết tỷ lệ 16:9 */}
                 {post.coverImage ? (
                   <div className="relative w-full aspect-[16/9] overflow-hidden mb-3.5 rounded-sm bg-neutral-100">
                     <img
@@ -167,6 +206,67 @@ export default async function CategoryPage({ params }: Props) {
             ← Return to Home
           </Link>
         </div>
+      )}
+
+      {/* ===== THANH PHÂN TRANG (TỰ ĐỘNG XUẤT HIỆN KHI > 6 BÀI) ===== */}
+      {totalPages > 1 && (
+        <nav
+          aria-label="Category Pagination"
+          className="flex flex-wrap items-center justify-center gap-2 mt-10 mb-6"
+        >
+          {currentPage > 1 ? (
+            <Link
+              href={
+                currentPage === 2
+                  ? `/category/${categorySlug}`
+                  : `/category/${categorySlug}?page=${currentPage - 1}`
+              }
+              className="px-3 sm:px-4 py-1.5 border border-gray-300 rounded text-xs sm:text-sm text-gray-700 bg-white hover:border-amber-600 transition-colors"
+            >
+              Previous
+            </Link>
+          ) : (
+            <span className="px-3 sm:px-4 py-1.5 border border-gray-200 rounded text-xs sm:text-sm text-gray-300 bg-gray-50 cursor-not-allowed">
+              Previous
+            </span>
+          )}
+
+          {Array.from({ length: totalPages }, (_, index) => {
+            const pageNum = index + 1;
+            const isActive = currentPage === pageNum;
+            const targetHref =
+              pageNum === 1
+                ? `/category/${categorySlug}`
+                : `/category/${categorySlug}?page=${pageNum}`;
+            return (
+              <Link
+                key={pageNum}
+                href={targetHref}
+                aria-current={isActive ? 'page' : undefined}
+                className={`px-3 sm:px-3.5 py-1.5 border rounded text-xs sm:text-sm transition-colors ${
+                  isActive
+                    ? 'border-gray-900 bg-gray-900 text-white font-semibold'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-amber-600'
+                }`}
+              >
+                {pageNum}
+              </Link>
+            );
+          })}
+
+          {currentPage < totalPages ? (
+            <Link
+              href={`/category/${categorySlug}?page=${currentPage + 1}`}
+              className="px-3 sm:px-4 py-1.5 border border-gray-300 rounded text-xs sm:text-sm text-gray-700 bg-white hover:border-amber-600 transition-colors"
+            >
+              Next
+            </Link>
+          ) : (
+            <span className="px-3 sm:px-4 py-1.5 border border-gray-200 rounded text-xs sm:text-sm text-gray-300 bg-gray-50 cursor-not-allowed">
+              Next
+            </span>
+          )}
+        </nav>
       )}
     </div>
   );

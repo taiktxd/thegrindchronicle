@@ -1,12 +1,21 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
+
+  // BẢO MẬT: ẨN HOÀN TOÀN FOOTER KHI Ở KHU VỰC QUẢN TRỊ ADMIN
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <footer className="w-full bg-neutral-950 text-white mt-12 sm:mt-16">
-      {/* 1. THANH CHỈ CAM MẢNH TINH TẾ (2px sắc nét, không còn bị thô) */}
+      {/* 1. THANH CHỈ CAM MẢNH TINH TẾ (2px sắc nét) */}
       <div className="w-full h-[2px] bg-[#e67e22]"></div>
 
       <div className="max-w-6xl mx-auto px-4 py-10 sm:py-12 flex flex-col items-center text-center">
@@ -35,7 +44,7 @@ export default function Footer() {
           </p>
         </Link>
 
-        {/* Vạch kẻ cam nhỏ điểm nhấn giữa slogan và menu */}
+        {/* Vạch kẻ cam nhỏ điểm nhấn */}
         <div className="w-12 h-[1.5px] bg-[#e67e22] mb-6"></div>
 
         {/* 3. CỤM LIÊN KẾT ĐIỀU HƯỚNG CHÍNH */}

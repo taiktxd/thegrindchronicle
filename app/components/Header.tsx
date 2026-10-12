@@ -2,13 +2,11 @@
 
 import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import SubscribeModal from './SubscribeModal';
 
-
-
-// Lắng nghe sự kiện lưu email từ SubscribeModal
+// Lắng nghe sự kiện lưu/xóa email từ SubscribeModal và Admin
 function subscribeToAuth(callback: () => void) {
   window.addEventListener('storage', callback);
   window.addEventListener('tgc_subscribed', callback);
@@ -27,10 +25,13 @@ function getServerSnapshot() {
 }
 
 export default function Header() {
+  // 1. TẤT CẢ CÁC HOOK ĐƯỢC GỌI LIÊN TỤC Ở ĐẦU COMPONENT
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
+
   const router = useRouter();
+  const pathname = usePathname();
 
   const subscriberEmail = useSyncExternalStore(
     subscribeToAuth,
@@ -38,8 +39,11 @@ export default function Header() {
     getServerSnapshot
   );
 
+  // 2. CÁC HÀM XỬ LÝ SỰ KIỆN
   const handleSignOut = () => {
     localStorage.removeItem('tgc_subscriber_email');
+    localStorage.removeItem('subscriber_email');
+    document.cookie = 'tgc_subscriber_email=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; SameSite=Lax';
     window.dispatchEvent(new Event('tgc_subscribed'));
   };
 
@@ -48,6 +52,11 @@ export default function Header() {
     if (!searchQuery.trim()) return;
     router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   };
+
+  // 3. ĐIỀU KIỆN ẨN HEADER CHO TRANG ADMIN ĐẶT SAU TOÀN BỘ HOOKS
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   const navItems = [
     { name: 'HOME', href: '/' },
@@ -67,7 +76,7 @@ export default function Header() {
   return (
     <>
       <header className="w-full bg-white text-neutral-900 border-b border-neutral-100">
-        {/* 1. TOP BAR */}
+        {/* TOP BAR */}
         <div className="w-full border-b border-neutral-100">
           <div className="max-w-6xl mx-auto px-4 h-8 flex items-center justify-between text-[11px] text-neutral-500">
             <div className="flex items-center gap-2 font-serif">
@@ -99,7 +108,6 @@ export default function Header() {
 
               <span className="text-neutral-300 mx-1">|</span>
 
-              {/* NÚT EMAIL THAY THẾ CHO NÚT SUBSCRIBE TẠI ĐÂY */}
               {subscriberEmail ? (
                 <div className="group relative flex items-center">
                   <button
@@ -111,7 +119,6 @@ export default function Header() {
                     <span className="text-emerald-400 text-xs font-bold">✓</span>
                   </button>
 
-                  {/* Bấm vào để đổi/thoát email nếu cần */}
                   <div className="hidden group-hover:block absolute right-0 top-full pt-1 z-30">
                     <div className="bg-white border border-neutral-200 shadow-lg rounded-lg p-2 min-w-[160px] text-left">
                       <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-1">
@@ -140,7 +147,7 @@ export default function Header() {
           </div>
         </div>
 
-        {/* 2. MASTHEAD */}
+        {/* MASTHEAD */}
         <div className="max-w-6xl mx-auto px-4 pt-3.5 pb-2 text-center">
           <Link href="/" className="inline-block group">
             <h1
@@ -162,7 +169,7 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* 3. NAVIGATION BAR */}
+        {/* NAVIGATION BAR */}
         <div className="max-w-6xl mx-auto px-4 h-10 border-t border-neutral-100 grid grid-cols-[auto_1fr_auto] sm:grid-cols-3 items-center">
           <div className="flex items-center justify-start">
             <Link href="/" className="shrink-0 flex items-center hover:opacity-80 transition-opacity">
