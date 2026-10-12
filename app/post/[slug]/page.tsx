@@ -1,12 +1,31 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import posts from '@/data/posts.json';
+import { getPostBySlug } from '@/lib/posts';
 import PostActions from '@/app/components/PostActions';
 import CommentSection from '@/app/components/CommentSection';
 import AdsterraNative from '@/app/components/AdsterraNative';
 import AdsterraBanner from '@/app/components/AdsterraBanner';
 import { Suspense } from 'react';
+
+type Section = {
+  type: string;
+  content?: string;
+  src?: string;
+  caption?: string;
+};
+
+type PostDetail = {
+  slug: string;
+  title?: string;
+  summary?: string;
+  date?: string;
+  category?: string;
+  author?: string;
+  coverImage?: string;
+  sections?: Section[];
+  content?: string;
+};
 
 type Props = {
   params: Promise<{ slug: string }> | { slug: string };
@@ -17,7 +36,7 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await Promise.resolve(params);
   const slug = resolvedParams?.slug;
-  const post = posts.find((p) => p.slug === slug);
+  const post = (slug ? getPostBySlug(slug) : null) as PostDetail | null;
 
   if (!post) {
     return {
@@ -33,13 +52,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     metadataBase: new URL(SITE_URL),
-    title: `${post.title} | The Grind Chronicle`,
+    title: `${post.title || ''} | The Grind Chronicle`,
     description: shortDesc,
     alternates: {
       canonical: `/post/${post.slug}`,
     },
     openGraph: {
-      title: post.title,
+      title: post.title || '',
       description: shortDesc,
       url: `${SITE_URL}/post/${post.slug}`,
       siteName: 'The Grind Chronicle',
@@ -47,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
+      title: post.title || '',
       description: shortDesc,
     },
   };
@@ -56,7 +75,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PostPage({ params }: Props) {
   const resolvedParams = await Promise.resolve(params);
   const slug = resolvedParams?.slug;
-  const post = posts.find((p) => p.slug === slug);
+  const post = (slug ? getPostBySlug(slug) : null) as PostDetail | null;
 
   if (!post) {
     notFound();
@@ -101,7 +120,7 @@ export default async function PostPage({ params }: Props) {
             <div className="w-full overflow-hidden rounded-xl mb-8 bg-neutral-100 shadow-2xs">
               <img
                 src={post.coverImage}
-                alt={post.title}
+                alt={post.title || ''}
                 className="w-full h-auto max-h-[480px] object-cover block"
                 loading="eager"
               />
@@ -119,7 +138,7 @@ export default async function PostPage({ params }: Props) {
         >
           {post.sections?.map(
             (
-              section: { type: string; content?: string; src?: string; caption?: string },
+              section: Section,
               index: number
             ) => {
               if (section.type === 'text') {
@@ -134,7 +153,7 @@ export default async function PostPage({ params }: Props) {
                   <figure key={index} className="my-8 sm:my-10">
                     <img
                       src={section.src}
-                      alt={section.caption || post.title}
+                      alt={section.caption || post.title || ''}
                       className="w-full h-auto rounded-xl block shadow-2xs"
                     />
                     {section.caption && (
@@ -159,7 +178,7 @@ export default async function PostPage({ params }: Props) {
             <span>←</span> Back to Stories
           </Link>
 
-          <PostActions slug={slug} title={post.title} />
+          <PostActions slug={slug} title={post.title || ''} />
         </div>
 
         {/* 4. QUẢNG CÁO NATIVE RECOMMENDATIONS */}
