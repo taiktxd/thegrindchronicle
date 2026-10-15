@@ -109,7 +109,7 @@ export default function Header() {
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <div className="hidden sm:flex items-center gap-2 text-[11px]">
                 <a
-                  href="https://www.threads.net/@hoop_soul"
+                  href="https://www.threads.net/@grind_chronicle"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
@@ -118,7 +118,7 @@ export default function Header() {
                 </a>
                 <span className="text-neutral-300">/</span>
                 <a
-                  href="#"
+                  href="https://www.facebook.com/profile.php?id=61595407708622"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
